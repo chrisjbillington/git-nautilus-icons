@@ -1,37 +1,48 @@
 # git-nautilus-icons
 
-Use git? Use Nautilus? Why not have nautilus give you info about your repos
-with overlaid icons?
+Use Git? Use Nautilus? Why not have nautilus give you info about your repos?
 
-git-na
-`inotify_init()` is wrapped as a class that does little more than hold the
-resulting inotify file descriptor. A `read()` method is provided which reads
-available data from the file descriptor and returns events as `namedtuple`
-objects after unpacking them with the `struct` module. `inotify_add_watch()`
-and `inotify_rm_watch()` are wrapped with no changes at all, taking and
-returning watch descriptor integers that calling code is expected to keep
-track of itself, just as one would use inotify from C. Works with Python 2 or
-3.
+git-nautilus-icons overlays emblems saying wither files are modified, added,
+untracked etc. It marks git repos as such and displays icons on them showing
+whether they have changed files, unpushed commits, etc.
 
-[View on PyPI](http://pypi.python.org/pypi/inotify_simple) |
-[Fork me on github](https://github.com/chrisjbillington/inotify_simple) |
-[Read the docs](http://inotify_simple.readthedocs.org)
+Here are some examples of what some files and repos look like with the plugin
+installed:
 
+![alt tag](screenshot.png)
 
 ## Installation
 
-to install `inotify_simple`, run:
+to install `git-nautilus-icons`, put the single python file `git-nautilus-icons.py` in `~/.local/share/nautilus-python/extensions`.
+
+The following should do it:
 
 ```
-$ pip install inotify_simple
+$ wget https://raw.github.com/chrisjbillington/git_nautilus_icons/master/git-nautilus-icons.png ~/.local/share/nautilus-python/extensions
 ```
 
-or to install from source:
+## Notes
 
-```
-$ python setup.py install
-```
+At the moment this extension makes no distinction between staged and unstaged
+changes. If a change is staged but not committed, this appears the same as if
+the change was unstaged. I'm working on a version that makes this distinction
+and puts little two-part icons on files, one for their status in the index and
+one for their status in the working tree, so watch this space.
 
-Note:  If on Python < 3.4, you'll need the backported [enum34
-module](https://pypi.python.org/pypi/enum34).
+Also, `git-nautilus-icons` makes a `git status` call every time nautilus
+enters a folder in a git repo, and for every git repo it encounters in a
+folder. Git is fast, so this is fine for all but the most gargantuan repos. If
+you happen to have such a repo, you can blacklist it by adding it to the
+`BLACKLIST` variable at the top of `git-nautilus-icons.py`. Then `git-
+nautilus-icons` will not treat those folders at git repos. (I'm working on a
+version based on `inotify` that will only call `git status` when files have
+changed, so be on the lookout for that if this thing is too slow for your
+oversized repos)
 
+Even if git status calls are fast, sometimes if there are many files in a
+single folder, Nautilus takes a long time to process all those icons. Whilst
+this isn't really the fault of `git-nautilus-icons`, nonetheless I can
+probably make it remember what it told Nautilus last time it asked about a
+file, and only tell it about the new icon if things have changed. So likewise
+if this is a problem, blacklist the repo and watch this space for a version
+that does this more efficiently.
