@@ -2,7 +2,7 @@
 
 Use Git? Use Nautilus? Why not have nautilus give you info about your repos?
 
-git-nautilus-icons overlays emblems saying whether files are modified, added,
+`git-nautilus-icons` overlays emblems saying whether files are modified, added,
 untracked etc. It marks git repos as such and displays icons on them showing
 whether they have changed files, unpushed commits, etc.
 
