@@ -35,15 +35,15 @@ enters a folder in a git repo, and for every git repo it encounters in a
 folder. Git is fast, so this is fine for all but the most gargantuan repos. If
 you happen to have such a repo, you can blacklist it by adding it to the
 `BLACKLIST` variable at the top of `git-nautilus-icons.py`. Then `git-nautilus-icons`
-will not treat those folders at git repos. (I'm working on a
+will not treat those folders as git repos. (I'm working on a
 version based on `inotify` that will only call `git status` when files have
 changed, so be on the lookout for that if this thing is too slow for your
 oversized repos)
 
-Even if git status calls are fast, sometimes if there are many files in a
-single folder, Nautilus takes a long time to process all those icons. Whilst
+Even if `git status` calls are fast, sometimes if there are many files in a
+single folder, Nautilus takes a few second to process all those icons. Whilst
 this isn't really the fault of `git-nautilus-icons`, nonetheless I can
 probably make it remember what it told Nautilus last time it asked about a
 file, and only tell it about the new icon if things have changed. So likewise
-if this is a problem, blacklist the repo and watch this space for a version
-that does this more efficiently.
+if this is a problem for a huge repo you have, blacklist the repo and watch
+this space for a version that does this more efficiently.
