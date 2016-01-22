@@ -18,7 +18,8 @@ to install `git-nautilus-icons`, put the single python file `git-nautilus-icons.
 The following should do it:
 
 ```
-$ wget https://raw.github.com/chrisjbillington/git_nautilus_icons/master/git-nautilus-icons.png ~/.local/share/nautilus-python/extensions
+$ mkdir -p ~/.local/share/nautilus-python/extensions/
+$ wget https://raw.github.com/chrisjbillington/git_nautilus_icons/master/git-nautilus-icons.py -o ~/.local/share/nautilus-python/extensions/git-nautilus-icons.py
 ```
 
 ## Notes
