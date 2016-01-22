@@ -34,8 +34,8 @@ Also, `git-nautilus-icons` makes a `git status` call every time nautilus
 enters a folder in a git repo, and for every git repo it encounters in a
 folder. Git is fast, so this is fine for all but the most gargantuan repos. If
 you happen to have such a repo, you can blacklist it by adding it to the
-`BLACKLIST` variable at the top of `git-nautilus-icons.py`. Then `git-
-nautilus-icons` will not treat those folders at git repos. (I'm working on a
+`BLACKLIST` variable at the top of `git-nautilus-icons.py`. Then `git-nautilus-icons`
+will not treat those folders at git repos. (I'm working on a
 version based on `inotify` that will only call `git status` when files have
 changed, so be on the lookout for that if this thing is too slow for your
 oversized repos)
