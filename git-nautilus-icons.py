@@ -236,7 +236,7 @@ def get_folder_overall_status(path, statuses):
     HAS_MODIFIED and HAS_UNMERGED), as well as HAS_UNTRACKED if relevant.
     """
     filtered_statuses = {stat for name, stat in statuses.items()
-                         if name.startswith(path)}
+                         if name.startswith(path + os.path.sep)}
 
     overall_status = FolderStatusSet()
     if FileStatus.UNTRACKED in filtered_statuses:
