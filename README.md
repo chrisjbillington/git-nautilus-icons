@@ -7,43 +7,50 @@ untracked etc. It marks git repos as such and displays icons on them showing
 whether they have changed files, unpushed commits, etc.
 
 Here are some examples of what some files and repos look like with the plugin
-installed:
+installed.
 
-![alt tag](screenshot.png)
+This in in 'simple' mode (enabled by default), which makes no distinction
+staged and unstaged changes, they are simply marked as changed regardless:
+
+![alt tag](screenshot-simple.png)
+
+And this is in 'full' mode, where changes in the index and changes in the work
+tree are displayed separately, with index status on the left and work tree
+status on the right. Unmerged files use two icons to show what type of merge
+conflict it is, with the current branch on the left and the other branch on
+the right. There is a fair bit of complexity in this mode and the icons are
+much smaller, but much more detail is given.
+
+![alt tag](screenshot-full.png)
 
 ## Installation
 
-to install `git-nautilus-icons`, put the single python file `git-nautilus-icons.py` in `~/.local/share/nautilus-python/extensions`.
+to install `git-nautilus-icons`, put the single python file
+`git-nautilus-icons.py` in `~/.local/share/nautilus-python/extensions`,
+and put the icons folder `hicolor` in `~/.icons/`. These directories might not
+exist, in which case create them.
 
-The following should do it:
+## Configuration
 
-```
-$ mkdir -p ~/.local/share/nautilus-python/extensions/
-$ wget https://raw.github.com/chrisjbillington/git_nautilus_icons/master/git-nautilus-icons.py -o ~/.local/share/nautilus-python/extensions/git-nautilus-icons.py
-```
+Note:  After changing configuration, you need to restart Nautilus for the
+changes to take effect, which you can do by running `killall nautilus`.
+
+### Switching between simple and full mode:
+You can choose between the two modes by changing a variable at the top of
+`git-nautilus-icons.py`, `ICON_MODE`, which you can set to either `'simple'`
+or `'full'`.
+
+You can blacklist repositories, to tell `git-nautilus-icons` not to check
+their status. This could be useful in the case of an extremely large
+repository where calling `git status` is slow and so the extension slows down
+browsing in Nautilus. Git is pretty fast, so I haven't seen this, but I hear
+such massive repos exist. Nautilus can also be pretty slow rendering those
+icons, so even if your repo is not that big, you may wish to blacklist one if
+you have a large number of files in a single folder and it slows Nautilus down
+enough.
 
 ## Notes
 
-At the moment this extension makes no distinction between staged and unstaged
-changes. If a change is staged but not committed, this appears the same as if
-the change was unstaged. I'm working on a version that makes this distinction
-and puts little two-part icons on files, one for their status in the index and
-one for their status in the working tree, so watch this space.
-
-Also, `git-nautilus-icons` makes a `git status` call every time nautilus
-enters a folder in a git repo, and for every git repo it encounters in a
-folder. Git is fast, so this is fine for all but the most gargantuan repos. If
-you happen to have such a repo, you can blacklist it by adding it to the
-`BLACKLIST` variable at the top of `git-nautilus-icons.py`. Then `git-nautilus-icons`
-will not treat those folders as git repos. (I'm working on a
-version based on `inotify` that will only call `git status` when files have
-changed, so be on the lookout for that if this thing is too slow for your
-oversized repos)
-
-Even if `git status` calls are fast, sometimes if there are many files in a
-single folder, Nautilus takes a few second to process all those icons. Whilst
-this isn't really the fault of `git-nautilus-icons`, nonetheless I can
-probably make it remember what it told Nautilus last time it asked about a
-file, and only tell it about the new icon if things have changed. So likewise
-if this is a problem for a huge repo you have, blacklist the repo and watch
-this space for a version that does this more efficiently.
+Icons are updated every time you browse to a directory, but whilst in a
+directory, Nautilus doesn't ask the extension for new icons unless it sees a
+file change on disk. Tap F5 in Nautilius to force a refresh.
