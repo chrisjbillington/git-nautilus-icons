@@ -15,11 +15,12 @@ staged and unstaged changes, they are simply marked as changed regardless:
 ![alt tag](screenshot-simple.png)
 
 And this is in 'full' mode, where changes in the index and changes in the work
-tree are displayed separately, with index status on the left and work tree
-status on the right. Unmerged files use two icons to show what type of merge
-conflict it is, with the current branch on the left and the other branch on
-the right. There is a fair bit of complexity in this mode and the icons are
-much smaller, but much more detail is given.
+tree are displayed separately, with index status on the left (only shown if
+it's not clean) and work tree status on the right. Unmerged files use two
+icons to show what type of merge conflict it is, with current branch on the
+left and the other branch on the right showing whether the file was modified,
+added or deleted in each branch. The icons are much smaller in this mode, but
+much more detail is given.
 
 ![alt tag](screenshot-full.png)
 
@@ -30,10 +31,14 @@ to install `git-nautilus-icons`, put the single python file
 and put the icons folder `hicolor` in `~/.icons/`. These directories might not
 exist, in which case create them.
 
+There is no need to install the icons if you are only using 'simple' mode,
+which uses system icons only.
+
+
 ## Configuration
 
-Note:  After changing configuration, you need to restart Nautilus for the
-changes to take effect, which you can do by running `killall nautilus`.
+Note: Close Nautilus with `killall nautilus` after making configuration
+changes, they will take effect when it is restarted.
 
 ### Switching between simple and full mode:
 You can choose between the two modes by changing a variable at the top of
