@@ -8,9 +8,6 @@ from gi.repository import Nautilus, GObject
 from subprocess import Popen, PIPE, CalledProcessError
 
 
-ICON_MODE = 'simple' # Set to either 'simple' or 'full'
-
-
 # Below is a blacklist for repos that should be ignored. Useful for ignoring
 # massive repos that make nautilus run slow. Ensure you don't have a trailing
 # slash on the directory paths entered here:
@@ -86,20 +83,6 @@ class MergeStatus(IntEnum):
     BOTH_MODIFIED = 4
 
 
-class SimpleIcon(object):
-    """Names of gnome icons we use in simple mode, rather than our own
-    composite icons"""
-    REPO = 'generic'
-    CLEAN = 'default'
-    UNTRACKED = 'dialog-question'
-    ADDED = 'add'
-    MODIFIED = 'important'
-    RENAMED = 'add'
-    DELETED = 'remove'
-    UNMERGED = 'error'
-    AHEAD = 'up'
-
-
 STATUS_CODES = {
                 # Possible statuses returned by 'git status -z':
                 ' M': (IndexStatus.CLEAN, WorktreeStatus.MODIFIED, MergeStatus.NO_CONFLICT),
@@ -140,7 +123,44 @@ STATUS_CODES = {
                 'ERROR': (IndexStatus.ERROR, WorktreeStatus.ERROR, MergeStatus.ERROR)}
 
 
-def get_icon_full(status):
+# The status of the files in the 'example' directory, hard coded to
+# demonstrate what different statuses look like:
+EXAMPLE_FILE_STATUSES = {'clean': STATUS_CODES['CLEAN'],
+                      'clean repo ahead of remote':
+                          (SyncStatus.AHEAD, RepoStatus.IS_A_REPO) + STATUS_CODES['CLEAN'],
+                      'ignored': STATUS_CODES['!!'],
+                      'repo with clean index and untracked files':
+                          (SyncStatus.NOT_AHEAD, RepoStatus.IS_A_REPO,
+                           IndexStatus.CLEAN, WorktreeStatus.UNTRACKED, MergeStatus.NO_CONFLICT),
+                      'repo with staged and unstaged deletions':
+                          (SyncStatus.NOT_AHEAD, RepoStatus.IS_A_REPO,
+                           IndexStatus.DELETED, WorktreeStatus.DELETED, MergeStatus.NO_CONFLICT),
+                      'staged and unstaged changes': STATUS_CODES['MM'],
+                      'staged changes': STATUS_CODES['M '],
+                      'staged changes, unstaged deletion': STATUS_CODES['MD'],
+                      'staged deletion': STATUS_CODES['D '],
+                      'staged deletion, restored in work tree': STATUS_CODES['D?'],
+                      'staged new file': STATUS_CODES['A '],
+                      'staged new file, unstaged changes': STATUS_CODES['AM'],
+                      'staged new file, unstaged deletion': STATUS_CODES['AD'],
+                      'staged rename': STATUS_CODES['R '],
+                      'staged rename, unstaged changes': STATUS_CODES['RM'],
+                      'staged rename, unstaged deletion': STATUS_CODES['RD'],
+                      'unmerged, both added': STATUS_CODES['AA'],
+                      'unmerged, both modified': STATUS_CODES['UU'],
+                      'unmerged, changed by them, deleted by us': STATUS_CODES['DU'],
+                      'unmerged, changed by us, deleted by them': STATUS_CODES['UD'],
+                      'unstaged changes': STATUS_CODES[' M'],
+                      'unstaged deletion': STATUS_CODES[' D'],
+                      'untracked': STATUS_CODES['??']}
+
+EXAMPLE_DIRECTORY = 'git_nautilus_icons/example'
+
+
+def example_statuses(path):
+    return {os.path.join(path, name): value for name, value in EXAMPLE_FILE_STATUSES.items()}
+
+def get_icon(status):
     if len(status) == 3:
         # It's a file
         index_status, worktree_status, merge_status = status
@@ -194,43 +214,6 @@ def get_icon_full(status):
     return 'git ' + ' '.join(sub_icons)
 
 
-def get_icons_simple(status):
-    """Returns a list of emblems but makes no distinction between work tree and index"""
-    if len(status) == 3:
-        # It's a file
-        index_status, worktree_status, merge_status = status
-        sync_status = SyncStatus.NOT_AHEAD
-        repo_status = RepoStatus.NOT_A_REPO
-    elif len(status) == 5:
-        # It's a repo
-        sync_status, repo_status, index_status, worktree_status, merge_status = status
-    else:
-        sys.stderr.write("invalid length of status tuple {}\n".format(len(status)))
-    icons = []
-    if sync_status is SyncStatus.AHEAD:
-        icons.append(SimpleIcon.AHEAD)
-    if repo_status is RepoStatus.IS_A_REPO:
-        icons.append(SimpleIcon.REPO)
-    if worktree_status is WorktreeStatus.UNMERGED:
-        icons.append(SimpleIcon.UNMERGED)
-    elif worktree_status is WorktreeStatus.MODIFIED or index_status is IndexStatus.MODIFIED:
-        icons.append(SimpleIcon.MODIFIED)
-    elif worktree_status is WorktreeStatus.DELETED or index_status is IndexStatus.DELETED:
-        icons.append(SimpleIcon.DELETED)
-    elif index_status is IndexStatus.RENAMED:
-        icons.append(SimpleIcon.RENAMED)
-    elif index_status is IndexStatus.ADDED:
-        icons.append(SimpleIcon.ADDED)
-    elif worktree_status is WorktreeStatus.UNTRACKED and index_status is IndexStatus.CLEAN:
-        # If a folder/repo contains both clean tracked files and untracked, we show both icons:
-        icons.append(SimpleIcon.CLEAN)
-        icons.append(SimpleIcon.UNTRACKED)
-    elif worktree_status is WorktreeStatus.UNTRACKED:
-        icons.append(SimpleIcon.UNTRACKED)
-    elif worktree_status is WorktreeStatus.CLEAN or index_status is IndexStatus.CLEAN:
-        icons.append(SimpleIcon.CLEAN)
-    return icons
-
 class NotARepo(CalledProcessError):
     pass
 
@@ -281,17 +264,16 @@ def git_call(cmd, path):
     try:
         proc = Popen(cmd, cwd=path, stdout=PIPE, stderr=PIPE)
         stdout, stderr = proc.communicate()
-        return stdout.decode('utf8')
     except OSError:
         # Git not installed, or repo path doesn't exist or isn't a directory.
-        raise NotARepo()
+        raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
     else:
         if proc.returncode:
             if 'Not a git repository' in stderr.decode('utf8'):
-                raise NotARepo()
+                raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
             else:
                 raise CalledProcessError(proc.returncode, cmd, output=(stdout + stderr))
-
+        return stdout.decode('utf8')
 
 def is_git_repo(path):
     """returns whether a path is a git repo"""
@@ -426,6 +408,8 @@ def directory_status(path):
     submodule itself. Thus, if a submodule is itself clean, but is checked out
     at a different commit than recorded by a commit in the parent repo, then
     it will appear as modified."""
+    if path.endswith(EXAMPLE_DIRECTORY):
+        return example_statuses(path)
     statuses = {}
     if not is_in_work_tree(path):
         # Not in a git repo. Give statuses of any git repos within:
@@ -515,18 +499,9 @@ class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
                 for s in status:
                     print('   ', s)
         if status is not None:
-            if ICON_MODE == 'simple':
-                icons = get_icons_simple(status)
-                for icon in icons:
-                    file.add_emblem(icon)
-                    if DEBUG:
-                        print('    icon: ', icon)
-            elif ICON_MODE == 'full':
-                icon = get_icon_full(status)
-                if icon is not None:
-                    if DEBUG:
-                        print('    icon:', icon)
-                    file.add_emblem(icon)
-            else:
-                sys.stderr.write("invalid ICON_MODE {}, must be 'simple' or 'full'\n".format(ICON_MODE))
+            icon = get_icon(status)
+            if icon is not None:
+                if DEBUG:
+                    print('    icon:', icon)
+                file.add_emblem(icon)
 
