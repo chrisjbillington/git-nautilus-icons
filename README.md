@@ -27,9 +27,6 @@ they are ahead of remote.
 
 ## Blacklisting
 
-Note: Close Nautilus with `killall nautilus` after changing the blacklist, it
-will take effect when nautilus it is restarted.
-
 You can blacklist repositories, to tell `git-nautilus-icons` not to check
 their status. This could be useful in the case of an extremely large
 repository where calling `git status` is slow and so the extension slows down
@@ -38,6 +35,12 @@ such massive repos exist. Nautilus can also be pretty slow rendering those
 icons, so even if your repo is not that big, you may wish to blacklist one if
 you have a large number of files in a single folder and it slows Nautilus down
 enough.
+
+To blacklist a repository, add its full path to the list `blacklist` at the
+top of `git-nautilus-icons.py`.
+
+Close Nautilus with `killall nautilus` after changing the blacklist, it
+will take effect when Nautilus it is restarted.
 
 ## Notes
 
