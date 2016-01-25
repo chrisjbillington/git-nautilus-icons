@@ -17,6 +17,7 @@ import urlparse, urllib
 from enum import IntEnum, unique
 from gi.repository import Nautilus, GObject
 from subprocess import Popen, PIPE, CalledProcessError
+from collections import defaultdict
 
 
 # Below is a blacklist for repos that should be ignored. Useful for ignoring
@@ -136,34 +137,36 @@ STATUS_CODES = {
 
 # The status of the files in the 'icon_testing_dir' directory, hard coded to
 # demonstrate what different statuses look like:
-EXAMPLE_FILE_STATUSES = {'clean': STATUS_CODES['CLEAN'],
-                      'clean repo ahead of remote':
-                          (SyncStatus.AHEAD, RepoStatus.IS_A_REPO) + STATUS_CODES['CLEAN'],
-                      'ignored': STATUS_CODES['!!'],
-                      'repo with clean index and untracked files':
-                          (SyncStatus.NOT_AHEAD, RepoStatus.IS_A_REPO,
-                           IndexStatus.CLEAN, WorktreeStatus.UNTRACKED, MergeStatus.NO_CONFLICT),
-                      'repo with staged and unstaged deletions':
-                          (SyncStatus.NOT_AHEAD, RepoStatus.IS_A_REPO,
-                           IndexStatus.DELETED, WorktreeStatus.DELETED, MergeStatus.NO_CONFLICT),
-                      'staged and unstaged changes': STATUS_CODES['MM'],
-                      'staged changes': STATUS_CODES['M '],
-                      'staged changes, unstaged deletion': STATUS_CODES['MD'],
-                      'staged deletion': STATUS_CODES['D '],
-                      'staged deletion, restored in work tree': STATUS_CODES['D?'],
-                      'staged new file': STATUS_CODES['A '],
-                      'staged new file, unstaged changes': STATUS_CODES['AM'],
-                      'staged new file, unstaged deletion': STATUS_CODES['AD'],
-                      'staged rename': STATUS_CODES['R '],
-                      'staged rename, unstaged changes': STATUS_CODES['RM'],
-                      'staged rename, unstaged deletion': STATUS_CODES['RD'],
-                      'unmerged, both added': STATUS_CODES['AA'],
-                      'unmerged, both modified': STATUS_CODES['UU'],
-                      'unmerged, changed by them, deleted by us': STATUS_CODES['DU'],
-                      'unmerged, changed by us, deleted by them': STATUS_CODES['UD'],
-                      'unstaged changes': STATUS_CODES[' M'],
-                      'unstaged deletion': STATUS_CODES[' D'],
-                      'untracked': STATUS_CODES['??']}
+EXAMPLE_FILE_STATUSES = {'01 clean repo': (SyncStatus.NOT_AHEAD, RepoStatus.IS_A_REPO) + STATUS_CODES['CLEAN'],
+                         '02 clean repo ahead of remote':
+                             (SyncStatus.AHEAD, RepoStatus.IS_A_REPO) + STATUS_CODES['CLEAN'],
+                         '03 ignored': STATUS_CODES['!!'],
+                         '04 clean': STATUS_CODES['CLEAN'],
+                         '05 untracked': STATUS_CODES['??'],
+                         '06 unstaged changes': STATUS_CODES[' M'],
+                         '07 unstaged deletion': STATUS_CODES[' D'],
+                         '08 staged changes': STATUS_CODES['M '],
+                         '09 staged rename': STATUS_CODES['R '],
+                         '10 staged new file': STATUS_CODES['A '],
+                         '11 staged deletion': STATUS_CODES['D '],
+                         '12 staged deletion, restored in work tree': STATUS_CODES['D?'],
+                         '13 staged and unstaged changes': STATUS_CODES['MM'],
+                         '14 staged rename, unstaged changes': STATUS_CODES['RM'],
+                         '15 staged new file, unstaged changes': STATUS_CODES['AM'],
+                         '16 staged changes, unstaged deletion': STATUS_CODES['MD'],
+                         '17 staged rename, unstaged deletion': STATUS_CODES['RD'],
+                         '18 staged new file, unstaged deletion': STATUS_CODES['AD'],
+                         '19 unmerged, both added': STATUS_CODES['AA'],
+                         '20 unmerged, both modified': STATUS_CODES['UU'],
+                         '21 unmerged, changed by them, deleted by us': STATUS_CODES['DU'],
+                         '22 unmerged, changed by us, deleted by them': STATUS_CODES['UD'],
+                         '23 repo with clean index and untracked files':
+                             (SyncStatus.NOT_AHEAD, RepoStatus.IS_A_REPO,
+                              IndexStatus.CLEAN, WorktreeStatus.UNTRACKED, MergeStatus.NO_CONFLICT),
+                         '24 repo with staged and unstaged deletions':
+                             (SyncStatus.NOT_AHEAD, RepoStatus.IS_A_REPO,
+                              IndexStatus.DELETED, WorktreeStatus.DELETED, MergeStatus.NO_CONFLICT),
+                         }
 
 ICON_TESTING_DIR = 'git_nautilus_icons/icon_testing_dir'
 
