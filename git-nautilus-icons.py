@@ -134,7 +134,7 @@ STATUS_CODES = {
                 'ERROR': (IndexStatus.ERROR, WorktreeStatus.ERROR, MergeStatus.ERROR)}
 
 
-# The status of the files in the 'example' directory, hard coded to
+# The status of the files in the 'icon_testing_dir' directory, hard coded to
 # demonstrate what different statuses look like:
 EXAMPLE_FILE_STATUSES = {'clean': STATUS_CODES['CLEAN'],
                       'clean repo ahead of remote':
@@ -165,7 +165,7 @@ EXAMPLE_FILE_STATUSES = {'clean': STATUS_CODES['CLEAN'],
                       'unstaged deletion': STATUS_CODES[' D'],
                       'untracked': STATUS_CODES['??']}
 
-EXAMPLE_DIRECTORY = 'git_nautilus_icons/example'
+ICON_TESTING_DIR = 'git_nautilus_icons/icon_testing_dir'
 
 
 def example_statuses(path):
@@ -419,7 +419,7 @@ def directory_status(path):
     submodule itself. Thus, if a submodule is itself clean, but is checked out
     at a different commit than recorded by a commit in the parent repo, then
     it will appear as modified."""
-    if path.endswith(EXAMPLE_DIRECTORY):
+    if path.endswith(ICON_TESTING_DIR):
         return example_statuses(path)
     statuses = {}
     if not is_in_work_tree(path):
