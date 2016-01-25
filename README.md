@@ -18,8 +18,10 @@ exist, in which case create them.
 Here is what each possible file status looks like, as well as a few examples
 of what repositories may look like. Folders and repositories are marked with
 the status of their contents, with the 'worst' status in the index and work
-tree shown (not necessarily from the same file). Repos are also marked with
-whether or not they are ahead of remote.
+tree shown (not necessarily from the same file). For files deleted from the
+work tree, their status will only be visible via their parent directory, so
+this is how they are shown below. Repos are also marked with whether or not
+they are ahead of remote.
 
 ![alt tag](key.png)
 

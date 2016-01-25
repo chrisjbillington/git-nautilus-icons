@@ -1,3 +1,14 @@
+#####################################################################
+#                                                                   #
+# Copyright 2016, Chris Billington                                  #
+#                                                                   #
+# This file is part of the git-nautilus-icons project (see          #
+# https://github.com/chrisjbillington/git_nautilus_icons) and is    #
+# licensed under the Simplified BSD License. See LICENSE in         #
+# the root directory of the project for the full license.           #
+#                                                                   #
+#####################################################################
+
 from PIL import Image
 
 unstaged = ['clean', 'modified', 'deleted', 'untracked']
