@@ -17,6 +17,7 @@ import urlparse, urllib
 from enum import IntEnum, unique
 from gi.repository import Nautilus, GObject
 from subprocess import Popen, PIPE, CalledProcessError
+from collections import defaultdict
 
 
 # Below is a blacklist for repos that should be ignored. Useful for ignoring
@@ -539,21 +540,19 @@ def repo_is_ahead(path):
     return 'ahead' in git_call(cmd, path)
 
 
-def get_folder_overall_status(path, file_statuses):
+def get_folder_overall_status(path, file_statuses, all_statuses):
     """Returns a 3-tuple of an IndexStatus, WorktreeStatus and MergeStatus,
     chosen based on the most severe of the corresponding statuses of the
-    files. File statuses provided need not have only filepaths within the
-    folder, this function filters for them itself."""
-    filtered_statuses = {stat for name, stat in file_statuses.items()
-                         if name.startswith(path + os.path.sep)}
-    if filtered_statuses:
-        index_statuses, worktree_statuses, merge_statuses = zip(*filtered_statuses)
+    files. file_statuses should be a set of status tuples for individual
+    files."""
+    if file_statuses:
+        index_statuses, worktree_statuses, merge_statuses = zip(*file_statuses)
         index_status = max(index_statuses)
         worktree_status = max(worktree_statuses)
         merge_status = max(merge_statuses)
     else:
-        # No files listed. Maybe the directory, or a parent directory are listed:
-        index_status, worktree_status, merge_status = file_statuses.get_status(path)
+        # No files listed. Maybe the directory, or a parent directory, is listed:
+        index_status, worktree_status, merge_status = all_statuses.get_status(path)
     return index_status, worktree_status, merge_status
 
 
@@ -566,7 +565,7 @@ def get_repo_overall_status(path, statuses):
     else:
         sync_status = SyncStatus.NOT_AHEAD
     repo_status = RepoStatus.IS_A_REPO
-    index_status, worktree_status, merge_status = get_folder_overall_status(path, statuses)
+    index_status, worktree_status, merge_status = get_folder_overall_status(path, set(statuses.values()), statuses)
     return sync_status, repo_status, index_status, worktree_status, merge_status
 
 
@@ -622,6 +621,23 @@ def repo_status(path):
     return overall_status, statuses
 
 
+def get_statuses_by_dir(path, file_statuses):
+    """Sort the file statuses into which directory at the current level they
+    are under. Only keep unique statuses, and return a dictionary of sets for
+    each directory rooted at the given path."""
+    statuses_by_dir = defaultdict(set)
+    prefix = path + '/'
+    len_prefix = len(prefix)
+    for name, status in file_statuses.items():
+        if not name.startswith(prefix):
+            continue
+        dirname = name[:name.find('/', len_prefix)]
+        statuses_by_dir[dirname].add(status)
+    return statuses_by_dir
+
+
+# import bprofile
+# @bprofile.BProfile('test.png')
 def directory_status(path):
     """Returns the statuses for all the files/directories in a given path
     (without recursing). For folders in a repo, their status is given as the
@@ -656,6 +672,9 @@ def directory_status(path):
         except NotARepo:
             # Repo deleted
             return {}
+        # As as optimisation, collect the set of statuses in each directory at
+        # the current level we're at:
+        statuses_by_dir = get_statuses_by_dir(path, file_statuses)
         for basename in os.listdir(path):
             fullname = os.path.join(path, basename)
             if basename == '.git':
@@ -677,8 +696,8 @@ def directory_status(path):
                     # subrepo deleted
                     continue
             else:
-                # A normal folder. Give its overall status:
-                status = get_folder_overall_status(fullname, file_statuses)
+                # A normal folder. Give its overall
+                status = get_folder_overall_status(fullname, statuses_by_dir[fullname], file_statuses)
             statuses[fullname] = status
     return statuses
 
