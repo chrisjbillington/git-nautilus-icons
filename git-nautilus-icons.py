@@ -17,7 +17,6 @@ import urlparse, urllib
 from enum import IntEnum, unique
 from gi.repository import Nautilus, GObject
 from subprocess import Popen, PIPE, CalledProcessError
-from collections import defaultdict
 
 
 # Below is a blacklist for repos that should be ignored. Useful for ignoring
@@ -171,8 +170,220 @@ EXAMPLE_FILE_STATUSES = {'01 clean repo': (SyncStatus.NOT_AHEAD, RepoStatus.IS_A
 ICON_TESTING_DIR = 'git_nautilus_icons/icon_testing_dir'
 
 
+# class InotifyWatcher(object):
+#     """A class to watch repos with inotify"""
+
+#     WATCH_flags = (flags.MODIFY | flags.MOVED_FROM | flags.MOVED_TO |
+#                    flags.CREATE | flags.DELETE | flags.DELETE_SELF | flags.MOVE_SELF |
+#                    flags.ONLYDIR | flags.DONT_FOLLOW | flags.EXCL_UNLINK)
+
+#     def __init__(self):
+#         # Repos that we are monitoring:
+#         self.repos = set()
+
+#         # Mapping of directories we are watching to the set of (possibly
+#         # multiple) repos that they are in:
+#         self.dir_to_repos = {}
+
+#         # Mapping of watched directories to a set of thier child directories:
+#         self.child_dirs = {}
+
+#         # Mapping of watched directories to their parent directories:
+#         self.parent_dirs = {}
+
+#         # Mapping of watch descriptors to directories:
+#         self.watch_descriptor_to_dir = {}
+
+#         # Mapping of directories to watch descriptors:
+#         self.dir_to_watch_descriptor = {}
+
+#         from inotify_simple import INotify
+#         self.inotify = INotify()
+
+#     def fileno(self):
+#         return self.inotify.fd
+
+#     def watch_tree(self, path, repo_paths):
+#         """Watch all directories in the tree rooted at path and in the given
+#         repositories (a set, possibly with more than one repository if the
+#         path is in a submodule)"""
+#         # Because we initiate watching from the top down, we won't miss any
+#         # folders - Those created after we traverse a directory will have
+#         # events generated about their creation. We may however see events
+#         # about some directories we are already watching. This is no problem,
+#         # as adding an identical watch twice has no effect.
+#         for dirpath, dirnames, _ in os.walk(path):
+#             try:
+#                 watch_descriptor = self.inotify.add_watch(dirpath, self.WATCH_flags)
+#             except OSError as e:
+#                 import errno
+#                 if e.errno in (errno.ENOTDIR, errno.ENOENT):
+#                     # directory has since been deleted or replaced by a file,
+#                     # so we no longer care about it.
+#                     pass
+#                 else:
+#                     raise
+#             else:
+#                 child_names = [os.path.join(dirpath, d) for d in dirnames]
+#                 self.child_dirs[dirpath] = set(child_names)
+#                 self.parent_dirs[dirpath] = os.path.dirname(dirpath)
+
+#                 self.dir_to_watch_descriptor[dirpath] = watch_descriptor
+#                 self.watch_descriptor_to_dir[watch_descriptor] = dirpath
+#                 repos_for_this_dir = self.dir_to_repos.setdefault(dirpath, set())
+#                 repos_for_this_dir.update(repo_paths)
+
+#     def rm_watch_tree(self, path):
+#         to_remove = [path]
+#         while to_remove:
+#             path = to_remove.pop()
+#             # Remove everything:
+#             wd = self.dir_to_watch_descriptor.pop(path)
+#             self.inotify.rm_watch(wd)
+#             if path in self.repos:
+#                 self.repos.remove(path)
+#             del self.parent_dirs[path]
+#             del self.dir_to_repos[path]
+#             del self.watch_descriptor_to_dir[wd]
+#             child_dirs = self.child_dirs.pop(path)
+#             # And remove all children too:
+#             for child_dir in child_dirs:
+#                 to_remove.extend(self.dir_to_watch_descriptor[child_dir])
+
+#     def add_repo(self, path):
+#         """Start watching a repo"""
+#         print('[SUB] add_repo:', os.path.basename(path))
+#         self.watch_tree(path, repo_paths=set((path,)))
+#         self.repos.add(path)
+
+#     def process_events(self):
+#         events = self.inotify.read()
+#         update_status_dirs = set()
+#         for event in events:
+#             if event.mask & flags.IGNORED:
+#                 continue
+#             path = self.watch_descriptor_to_dir[event.wd]
+#             if path.endswith('/.git') and event.name == 'index.lock':
+#                 continue
+#             print('[SUB]', event)
+#             for flag in flags.from_mask(event.mask):
+#                 print('[SUB]   ', flag)
+#             if event.mask & flags.ISDIR:
+#                 subdir_path = os.path.join(path, event.name)
+#                 update_status_dirs.add(path)
+#                 if event.mask & (flags.DELETE | flags.MOVED_FROM):
+#                     # Directory gone, stop watching it:
+#                     self.rm_watch_tree(subdir_path)
+#                 if event.mask & (flags.CREATE | flags.MOVED_TO):
+#                     # New directory, start watching it. Need parent dir to
+#                     # know which repo(s) the new dir is in, should be the
+#                     # same as its parent dir:
+#                     repo_paths = self.dir_to_repos[path]
+#                     self.watch_tree(subdir_path, repo_paths)
+#             elif event.mask & (flags.MOVE_SELF | flags.DELETE_SELF):
+#                 # Directory gone, stop watching it:
+#                 self.rm_watch_tree(path)
+#             elif event.mask & (flags.CREATE | flags.DELETE | flags.MODIFY |
+#                                flags.MOVED_FROM | flags.MOVED_TO):
+#                 # Contents of directory changed, so repo status needs updating:
+#                 update_status_dirs.add(path)
+#             else:
+#                 raise ValueError(flags.from_mask(event.mask))
+
+#         # And we have repos to update, if they haven't been removed by
+#         # rm_watch_tree:
+#         repos_to_update = set()
+#         for path in update_status_dirs:
+#             try:
+#                 repos = self.dir_to_repos[path]
+#             except KeyError:
+#                 pass # Deleted by another event.
+#             else:
+#                 repos_to_update.update(repos)
+
+#         return repos_to_update
+
+
+# class InotifyInformer(object):
+#     """A class to let us know if files have changed in a repo since we last
+#     asked. We only call 'git status' if they have.'"""
+#     ARRAY_SIZE = 1000
+#     def __init__(self):
+#         from multiprocessing import Pipe, RawArray, Process
+#         # We're making a shared array of bytes, and will spawn a subprocess.
+#         # The subprocess will write ones to the array for filepaths of repos
+#         # that require updating. We will read these and know if repos need
+#         # updating, and will write zeros before we do each update so we won't
+#         # update again until the subprocess says so by writing another one. We
+#         # store which filepath corresponds to which array index (and vice
+#         # versa) in dictionaries, and will only store ARRAY_SIZE of them
+#         # before going back to the start and overwriting old ones.
+
+#         self.array = RawArray('b', self.ARRAY_SIZE)
+#         self.current_index = 0
+
+#         # Bidirectional table so lookups both ways can be fast:
+#         self.index_to_filepath = {}
+#         self.filepath_to_index = {}
+
+#         self.connection, child_connection = Pipe()
+
+#         self.subproc = Process(target=self.checker, args=(child_connection,))
+#         self.subproc.daemon=True
+#         self.subproc.start()
+
+#     def requires_update(self, filepath):
+#         try:
+#             index = self.filepath_to_index[filepath]
+#         except KeyError:
+#             # We haven't seen this file before. Tell the subprocess about it,
+#             # and store it in our dictionaries:
+#             self.connection.send(('add', filepath))
+#             self._new_file(filepath)
+#             self.connection.recv()
+#             index = self.current_index
+#         if not self.array[index]:
+#             return False
+#         self.array[index] = 0
+#         return True
+
+#     def _new_file(self, filepath):
+#         """Called in both processes to update their copies of the data
+#         structures when we get a new filepath"""
+#         # Store the new filepath in our dictionaries at the current index,
+#         # overwriting an old entry if there is one there already:
+#         self.current_index = (self.current_index + 1) % self.ARRAY_SIZE
+#         existing_filepath = self.index_to_filepath.get(self.current_index, None)
+#         if existing_filepath is not None:
+#             del self.filepath_to_index[existing_filepath]
+#         self.index_to_filepath[self.current_index] = filepath
+#         self.filepath_to_index[filepath] = self.current_index
+
+#     def checker(self, connection):
+#         import select
+#         watcher = InotifyWatcher()
+#         while True:
+#             (events,[],[]) = select.select([connection, watcher],[],[])
+#             if connection in events:
+#                 cmd, filepath = connection.recv()
+#                 if cmd == 'add':
+#                     self._new_file(filepath)
+#                     watcher.add_repo(filepath)
+#                     self.array[self.current_index] = 1
+#                 elif cmd == 'remove':
+#                     raise NotImplementedError
+#                 connection.send(None)
+#             if watcher in events:
+#                 repos_to_update = watcher.process_events()
+#                 for repo in repos_to_update:
+#                     print('[SUB] update detected:', os.path.basename(repo))
+#                     index = self.filepath_to_index[repo]
+#                     self.array[index] = 1
+
+
 def example_statuses(path):
     return {os.path.join(path, name): value for name, value in EXAMPLE_FILE_STATUSES.items()}
+
 
 def get_icon(status):
     if len(status) == 3:
@@ -362,10 +573,10 @@ def get_repo_overall_status(path, statuses):
 def repo_status(path):
     """Return the status of the repo overall as well as a dict of the statuses
     of all non-ignored files in it. All files within the work tree but not
-    listed in the output can safely be assumed to have status IGNORED.
+    listed in the output have the status of their parent directories.
     Raises NotARepo if the path no longer points to a git repo."""
     repo_root = get_repo_root(path)
-    # 'git status' will get all files other than ignored and unmodified ones:
+    # 'git status' will get all files other than unmodified ones:
     status_command = ['git', 'status', '-z']
     status_output = git_call(status_command, path)
     statuses = FileStatuses(repo_root)
@@ -518,4 +729,3 @@ class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
                 if DEBUG:
                     print('    icon:', icon)
                 file.add_emblem(icon)
-
