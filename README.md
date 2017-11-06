@@ -10,18 +10,27 @@ files, unpushed commits, etc.
 
 ## Installation
 
-to install `git-nautilus-icons`, put the single python file
-`git-nautilus-icons.py` in `~/.local/share/nautilus-python/extensions`,
-and put the icons folder `hicolor` in `~/.icons/`. These directories might not
-exist, in which case create them.
+`git-nautilus-icons` requires `python-nautilus`, the python `pathlib` library
+and the python `enum34` library. On Ubuntu these are installable with: `sudo
+apt-get install python-pathlib python-nautilus python enum34`
 
-Restart Nautilus with `killall nautilus` for the plugin to be loaded next time
+to install `git-nautilus-icons`, put the single python file `git-nautilus-
+icons.py` in `~/.local/share/nautilus-python/extensions`, and put the icons
+folder `hicolor` in `~/.icons/`. These directories might not exist, in which
+case create them. You can use the following commands to do so:
+
+```bash
+cd /tmp
+git clone https://github.com/chrisjbillington/git_nautilus_icons
+cd git_nautilus_icons/
+mkdir -p ~/.icons
+cp -r icons/hicolor ~/.icons
+mkdir -p ~/.local/share/nautilus-python/extensions
+cp git-nautilus-icons.py ~/.local/share/nautilus-python/extensions
+```
+
+Then restart Nautilus with `killall nautilus` and the plugin will be loaded next time
 a Nautilus window is opened.
-
-`git-nautilus-icons` requires `python-nautilus`, the Python bindings to
-Nautilus; the python `pathlib` library and the python `enum34` library. On
-Ubuntu these are installable with: `sudo apt-get install python-pathlib
-python-nautilus python enum34`
 
 To uninstall, simply delete `git-nautilus-icons.py` and the `hicolor` icons
 folder.
