@@ -12,7 +12,7 @@ files, unpushed commits, etc.
 
 `git-nautilus-icons` requires `python-nautilus`, the python `pathlib` library
 and the python `enum34` library. On Ubuntu these are installable with: `sudo
-apt-get install python-pathlib python-nautilus python enum34`
+apt-get install python-pathlib python-nautilus python-enum34`
 
 to install `git-nautilus-icons`, put the single python file `git-nautilus-
 icons.py` in `~/.local/share/nautilus-python/extensions`, and put the icons
