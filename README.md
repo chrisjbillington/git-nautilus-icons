@@ -1,10 +1,12 @@
 # git-nautilus-icons
 
-Use Git? Use Nautilus? Why not have nautilus give you info about your repos?
+Use Git? Use Nautilus? Why not have Nautilus give you info about your repos?
 
-`git-nautilus-icons` overlays emblems saying whether files are modified, added,
-untracked etc. It marks git repos as such and displays icons on them showing
-whether they have changed files, unpushed commits, etc.
+`git-nautilus-icons` overlays emblems saying whether files are modified,
+added, untracked etc, with a high level of detail showing the exact status of
+the file including both staged and unstaged changes separately. It marks git
+repos as such and displays icons on them showing whether they have changed
+files, unpushed commits, etc.
 
 ## Installation
 
@@ -12,6 +14,17 @@ to install `git-nautilus-icons`, put the single python file
 `git-nautilus-icons.py` in `~/.local/share/nautilus-python/extensions`,
 and put the icons folder `hicolor` in `~/.icons/`. These directories might not
 exist, in which case create them.
+
+Restart Nautilus with `killall nautilus` for the plugin to be loaded next time
+a Nautilus window is opened.
+
+`git-nautilus-icons` requires `python-nautilus`, the Python bindings to
+Nautilus; the python `pathlib` library and the python `enum34` library. On
+Ubuntu these are installable with: `sudo apt-get install python-pathlib
+python-nautilus python enum34`
+
+To uninstall, simply delete `git-nautilus-icons.py` and the `hicolor` icons
+folder.
 
 ## Icon key
 

@@ -15,6 +15,8 @@ import os
 import pathlib
 import urlparse, urllib
 from enum import IntEnum, unique
+import gi
+gi.require_version('Nautilus', '3.0')
 from gi.repository import Nautilus, GObject
 from subprocess import Popen, PIPE, CalledProcessError
 from collections import defaultdict
