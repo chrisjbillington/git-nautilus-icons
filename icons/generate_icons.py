@@ -53,7 +53,7 @@ all_icons = unstaged_icons + staged_icons + unmerged_icons + repo_icons + ahead_
 
 for tl, tr, bl, br in all_icons:
     #create new SVG figure
-    background_image = sg.SVGFigure("32px", "32px")
+    background_image = sg.SVGFigure(32, 32)
     if tl is not None:
         tl_file = 'sub_icons/{}.svg'.format(tl)
         tl_image = sg.fromfile(tl_file).getroot()
