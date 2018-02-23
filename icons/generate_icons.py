@@ -9,7 +9,7 @@
 #                                                                   #
 #####################################################################
 
-from PIL import Image
+import svgutils.transform as sg
 
 unstaged = ['clean', 'modified', 'deleted', 'untracked']
 staged = ['modified', 'renamed', 'added', 'deleted']
@@ -52,26 +52,24 @@ all_icons = unstaged_icons + staged_icons + unmerged_icons + repo_icons + ahead_
 
 
 for tl, tr, bl, br in all_icons:
-    # background_image = None
-    background_image = Image.new("RGBA", (24, 24))
+    #create new SVG figure
+    background_image = sg.SVGFigure("32px", "32px")
     if tl is not None:
-        tl_file = 'sub_icons/{}.png'.format(tl)
-        tl_image = Image.open(tl_file)
-        background_image.paste(tl_image, (0, 0), tl_image)
+        tl_file = 'sub_icons/{}.svg'.format(tl)
+        tl_image = sg.fromfile(tl_file).getroot()
+        background_image.append(tl_image)
     if tr is not None:
-        tr_file = 'sub_icons/{}.png'.format(tr)
-        tr_image = Image.open(tr_file)
-        background_image.paste(tr_image, (0, 0), tr_image)
+        tr_file = 'sub_icons/{}.svg'.format(tr)
+        tr_image = sg.fromfile(tr_file).getroot()
+        background_image.append(tr_image)
     if bl is not None:
-        bl_file = 'sub_icons/{} l.png'.format(bl)
-        bl_image = Image.open(bl_file)
-        background_image.paste(bl_image, (0, 0), bl_image)
+        bl_file = 'sub_icons/{} l.svg'.format(bl)
+        bl_image = sg.fromfile(bl_file).getroot()
+        background_image.append(bl_image)
     if br is not None:
-        br_file = 'sub_icons/{} r.png'.format(br)
-        br_image = Image.open(br_file)
-        background_image.paste(br_image, (0, 0), br_image)
+        br_file = 'sub_icons/{} r.svg'.format(br)
+        br_image = sg.fromfile(br_file).getroot()
+        background_image.append(br_image)
     filename = ' '.join([name for name in (tl, tr, bl, br) if name is not None])
-    filename = 'hicolor/24x24/emblems/git {}.png'.format(filename)
+    filename = 'hicolor/scalable/emblems/git {}.svg'.format(filename)
     background_image.save(filename)
-
-
