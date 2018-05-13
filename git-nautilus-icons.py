@@ -497,7 +497,7 @@ def git_call(cmd, path):
         raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
     else:
         if proc.returncode:
-            if 'Not a git repository' in stderr.decode('utf8'):
+            if 'not a git repository' in stderr.decode('utf8').lower():
                 raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
             else:
                 raise CalledProcessError(proc.returncode, cmd, output=(stdout + stderr))
