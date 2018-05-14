@@ -13,7 +13,6 @@ from __future__ import print_function, unicode_literals
 import sys
 import os
 import pathlib
-import urlparse, urllib
 from enum import IntEnum, unique
 import gi
 gi.require_version('Nautilus', '3.0')
@@ -731,13 +730,28 @@ class Cache(object):
         return cls.file_statuses.pop(path)
 
 
+def get_filepath(file):
+    """Extract filepath from the URI in a NautilusVFSFile object. Return the
+    filepath or None if uri scheme is not 'file'"""
+    if sys.version_info.major == 2:
+        from urlparse import urlparse
+        from urllib import unquote
+    else:
+        from urllib.parse import urlparse
+        from urllib.parse import unquote
+
+    parsed_uri = urlparse(file.get_uri())
+    if parsed_uri.scheme == 'file':
+        netloc = parsed_uri.netloc.decode('utf8')
+        path = unquote(parsed_uri.path).decode('utf8')
+        return os.path.abspath(os.path.join(netloc, path))
+
+
 class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
     def update_file_info(self, file):
-        uri = urllib.unquote(file.get_uri()).decode('utf8')
-        parsed_uri = urlparse.urlparse(uri)
-        if parsed_uri.scheme != 'file':
+        filepath = get_filepath(file)
+        if filepath is None:
             return
-        filepath = os.path.abspath(os.path.join(parsed_uri.netloc, parsed_uri.path))
         status = Cache.get(filepath)
         if DEBUG:
             print(os.path.basename(filepath))
