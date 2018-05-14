@@ -713,7 +713,7 @@ class Cache(object):
         # triggering it to ask as for them again:
         for path in os.listdir(directory):
             fullpath = os.path.join(directory, path)
-            if sys.version < '3':
+            if sys.version_info.major == 2:
                 fullpath = fullpath.encode('utf8')
             uri = pathlib.Path(fullpath).as_uri()
             fileinfo = Nautilus.FileInfo.create_for_uri(uri)
