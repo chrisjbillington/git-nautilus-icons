@@ -1,6 +1,6 @@
 # git-nautilus-icons
 
-Use Git? Use Nautilus? Why not have Nautilus give you info about your repos?
+Use Git? Use Nautilus (or Nemo or Caja)? Why not have your file browser give you info about your repos?
 
 `git-nautilus-icons` overlays emblems saying whether files are modified,
 added, untracked etc, with a high level of detail showing the exact status of
@@ -10,9 +10,15 @@ files, unpushed commits, etc.
 
 ## Installation
 
-`git-nautilus-icons` requires `python-nautilus`, the python `pathlib` library
-and the python `enum34` library. On Ubuntu these are installable with: `sudo
-apt-get install python-pathlib python-nautilus python-enum34`
+`git-nautilus-icons` also supports Nemo and Caja. To install it for Nemo or Caja,
+replace "nautilus" everywhere it appears below with "caja" or "nemo". Everything is
+exactly the same since nemo and caja are forks of Nautilus that have not changed
+anythng relevant to this extension.
+
+`git-nautilus-icons` requires `python-nautilus` (or `python-nemo` or `python-
+caja`), the python `pathlib` library and the python `enum34` library. On Ubuntu
+these are installable with: `sudo apt-get install python-pathlib python-nautilus
+python-enum34`
 
 to install `git-nautilus-icons`, put the single python file `git-nautilus-
 icons.py` in `~/.local/share/nautilus-python/extensions`, and put the icons
