@@ -15,8 +15,15 @@ import os
 import pathlib
 from enum import IntEnum, unique
 import gi
-gi.require_version('Nautilus', '3.0')
-from gi.repository import Nautilus, GObject
+from gi.repository import GObject
+if sys.argv[0] == 'nemo':
+    gi.require_version('Nemo', '3.0')
+    from gi.repository import Nemo as Nautilus
+elif sys.argv[0] == 'caja':
+    gi.require_version('Caja', '2.0')
+    from gi.repository import Caja as Nautilus
+else:
+    from gi.repository import Nautilus
 from subprocess import Popen, PIPE, CalledProcessError
 from collections import defaultdict
 
@@ -745,7 +752,6 @@ def get_filepath(file):
         netloc = parsed_uri.netloc.decode('utf8')
         path = unquote(parsed_uri.path).decode('utf8')
         return os.path.abspath(os.path.join(netloc, path))
-
 
 class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
     def update_file_info(self, file):
