@@ -13,14 +13,14 @@ files, unpushed commits, etc.
 `git-nautilus-icons` also supports Nemo and Caja. To install it for Nemo or Caja,
 replace "nautilus" everywhere it appears below with "caja" or "nemo". Everything is
 exactly the same since nemo and caja are forks of Nautilus that have not changed
-anythng relevant to this extension.
+anything relevant to this extension.
 
-`git-nautilus-icons` requires `python-nautilus` (or `python-nemo` or `python-
-caja`), the python `pathlib` library and the python `enum34` library. On Ubuntu
-these are installable with: `sudo apt-get install python-pathlib python-nautilus
-python-enum34`
+`git-nautilus-icons` requires `python-gi`, `python-nautilus` (or `python-nemo` or
+`python-caja`), the python `pathlib` library and the python `enum34` library. On Ubuntu
+these are installable with: `sudo apt-get install python-gi python-pathlib
+python-nautilus python-enum34`
 
-to install `git-nautilus-icons`, put the single python file `git-nautilus-
+To install `git-nautilus-icons`, put the single python file `git-nautilus-
 icons.py` in `~/.local/share/nautilus-python/extensions`, and put the icons
 folder `hicolor` in `~/.icons/`. These directories might not exist, in which
 case create them. You can use the following commands to do so:

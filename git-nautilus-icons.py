@@ -23,6 +23,7 @@ elif sys.argv[0] == 'caja':
     gi.require_version('Caja', '2.0')
     from gi.repository import Caja as Nautilus
 else:
+    gi.require_version('Nautilus', '3.0')
     from gi.repository import Nautilus
 from subprocess import Popen, PIPE, CalledProcessError
 from collections import defaultdict
