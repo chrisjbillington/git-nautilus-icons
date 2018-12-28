@@ -74,4 +74,4 @@ will take effect when Nautilus it is restarted.
 
 Icons are updated every time you browse to a directory, but whilst in a
 directory, Nautilus doesn't ask the extension for new icons unless it sees a
-file change on disk. Tap F5 in Nautilius to force a refresh.
+file change on disk. Tap F5 in Nautilus to force a refresh.
