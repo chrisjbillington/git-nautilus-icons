@@ -574,7 +574,13 @@ def get_repo_overall_status(path, statuses):
     else:
         sync_status = SyncStatus.NOT_AHEAD
     repo_status = RepoStatus.IS_A_REPO
-    index_status, worktree_status, merge_status = get_folder_overall_status(path, set(statuses.values()), statuses)
+    if not statuses:
+        # No files! Therefore clean.
+        index_status = IndexStatus.CLEAN
+        worktree_status = WorktreeStatus.CLEAN
+        merge_status = MergeStatus.NO_CONFLICT
+    else:
+        index_status, worktree_status, merge_status = get_folder_overall_status(path, set(statuses.values()), statuses)
     return sync_status, repo_status, index_status, worktree_status, merge_status
 
 
@@ -611,13 +617,12 @@ def repo_status(path):
             # A rename, the next entry is the original filename. Skip it.
             i += 1
         i += 1
-        status_command
     # And now to get all the unmodified files:
     lstree_command = ['git', 'ls-tree', '--full-tree', '-zr', '--name-only', 'HEAD']
     try:
         lstree_output = git_call(lstree_command, path)
     except CalledProcessError as e:
-        if not 'Not a valid object name HEAD' in e.output:
+        if not 'Not a valid object name HEAD' in e.output.decode('utf8'):
             # Ignore if there is no HEAD (no commits probably). Otherwise raise.
             raise
     else:
@@ -748,10 +753,13 @@ def get_filepath(file):
         from urllib.parse import urlparse
         from urllib.parse import unquote
 
+    def _checkdecode(s):
+        return s.decode('utf8') if isinstance(s, bytes) else s
+
     parsed_uri = urlparse(file.get_uri())
     if parsed_uri.scheme == 'file':
-        netloc = parsed_uri.netloc.decode('utf8')
-        path = unquote(parsed_uri.path).decode('utf8')
+        netloc = _checkdecode(parsed_uri.netloc)
+        path = _checkdecode(unquote(parsed_uri.path))
         return os.path.abspath(os.path.join(netloc, path))
 
 class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
