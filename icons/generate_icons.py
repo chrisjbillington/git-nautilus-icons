@@ -16,9 +16,9 @@ unstaged = ['clean', 'modified', 'deleted', 'untracked']
 staged = ['modified', 'renamed', 'added', 'deleted']
 clean = 'clean'
 untracked = 'untracked'
-unmerged_modified = 'unmerged modified'
-unmerged_deleted = 'unmerged deleted'
-unmerged_added = 'unmerged added'
+unmerged_modified = 'unmerged-modified'
+unmerged_deleted = 'unmerged-deleted'
+unmerged_added = 'unmerged-added'
 repo = 'repo'
 ahead = 'ahead'
 
@@ -64,11 +64,11 @@ for tl, tr, bl, br in all_icons:
         tr_image = sg.fromfile(tr_file).getroot()
         background_image.append(tr_image)
     if bl is not None:
-        bl_file = 'sub_icons/{} l.svg'.format(bl)
+        bl_file = 'sub_icons/{}-l.svg'.format(bl)
         bl_image = sg.fromfile(bl_file).getroot()
         background_image.append(bl_image)
     if br is not None:
-        br_file = 'sub_icons/{} r.svg'.format(br)
+        br_file = 'sub_icons/{}-r.svg'.format(br)
         br_image = sg.fromfile(br_file).getroot()
         background_image.append(br_image)
     filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])

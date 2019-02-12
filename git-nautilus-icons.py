@@ -413,17 +413,17 @@ def get_icon(status):
         sub_icons.append('repo')
     if worktree_status is WorktreeStatus.UNMERGED:
         if merge_status is MergeStatus.THEY_DELETED:
-            sub_icons.append('unmerged modified')
-            sub_icons.append('unmerged deleted')
+            sub_icons.append('unmerged-modified')
+            sub_icons.append('unmerged-deleted')
         elif merge_status is MergeStatus.WE_DELETED:
-            sub_icons.append('unmerged deleted')
-            sub_icons.append('unmerged modified')
+            sub_icons.append('unmerged-deleted')
+            sub_icons.append('unmerged-modified')
         elif merge_status is MergeStatus.BOTH_ADDED:
-            sub_icons.append('unmerged added')
-            sub_icons.append('unmerged added')
+            sub_icons.append('unmerged-added')
+            sub_icons.append('unmerged-added')
         elif merge_status is MergeStatus.BOTH_MODIFIED:
-            sub_icons.append('unmerged modified')
-            sub_icons.append('unmerged modified')
+            sub_icons.append('unmerged-modified')
+            sub_icons.append('unmerged-modified')
     # We only show index clean if work tree is untracked (only applies for directories/repos):
     else:
         if index_status is IndexStatus.CLEAN and worktree_status is WorktreeStatus.UNTRACKED:
