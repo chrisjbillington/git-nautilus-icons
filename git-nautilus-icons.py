@@ -446,7 +446,7 @@ def get_icon(status):
             sub_icons.append('modified')
     if not sub_icons:
         return None
-    return 'git ' + ' '.join(sub_icons)
+    return 'git-' + '-'.join(sub_icons)
 
 
 class NotARepo(CalledProcessError):

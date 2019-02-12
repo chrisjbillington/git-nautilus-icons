@@ -9,6 +9,7 @@
 #                                                                   #
 #####################################################################
 
+import os
 import svgutils.transform as sg
 
 unstaged = ['clean', 'modified', 'deleted', 'untracked']
@@ -50,7 +51,7 @@ ahead_icons = [(ahead, repo, bl, br) for _, repo, bl, br in repo_icons]
 # Put them all together:
 all_icons = unstaged_icons + staged_icons + unmerged_icons + repo_icons + ahead_icons
 
-
+os.system('mkdir -p ./hicolor/scalable/emblems/')
 for tl, tr, bl, br in all_icons:
     #create new SVG figure
     background_image = sg.SVGFigure(32, 32)
@@ -70,6 +71,6 @@ for tl, tr, bl, br in all_icons:
         br_file = 'sub_icons/{} r.svg'.format(br)
         br_image = sg.fromfile(br_file).getroot()
         background_image.append(br_image)
-    filename = ' '.join([name for name in (tl, tr, bl, br) if name is not None])
-    filename = 'hicolor/scalable/emblems/git {}.svg'.format(filename)
+    filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
+    filename = 'hicolor/scalable/emblems/git-{}.svg'.format(filename)
     background_image.save(filename)
