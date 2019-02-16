@@ -14,19 +14,35 @@ import sys
 import os
 import pathlib
 from enum import IntEnum, unique
-import gi
-from gi.repository import GObject
-if sys.argv[0] == 'nemo':
-    gi.require_version('Nemo', '3.0')
-    from gi.repository import Nemo as Nautilus
-elif sys.argv[0] == 'caja':
-    gi.require_version('Caja', '2.0')
-    from gi.repository import Caja as Nautilus
-else:
-    gi.require_version('Nautilus', '3.0')
-    from gi.repository import Nautilus
 from subprocess import Popen, PIPE, CalledProcessError
 from collections import defaultdict
+import socket
+import threading
+import tempfile
+from binascii import hexlify
+try:
+    from multiprocessing.connection import Connection
+except ImportError:
+    from _multiprocessing import Connection
+
+import gi
+from gi.repository import GObject
+
+PY2 = sys.version_info.major == 2
+
+# A string in sys.argv so that the worker process can identify itself:
+WORKER_ARG = 'git-nautilus-icons-worker'
+if WORKER_ARG not in sys.argv:
+    # Only import the extension modules if we are not the worker process
+    if sys.argv[0] == 'nemo':
+        gi.require_version('Nemo', '3.0')
+        from gi.repository import Nemo as Nautilus
+    elif sys.argv[0] == 'caja':
+        gi.require_version('Caja', '2.0')
+        from gi.repository import Caja as Nautilus
+    else:
+        gi.require_version('Nautilus', '3.0')
+        from gi.repository import Nautilus
 
 
 # Below is a blacklist for repos that should be ignored. Useful for ignoring
@@ -51,9 +67,26 @@ def blacklisted(path):
     return False
 
 
+# Constants to represent requests and information between parent and child. Not an enum
+# because they don't survive pickling between processes in the way we're doing it.
+SEND_READY = 0
+STILL_WORKING = 1
+ALL_DONE = 2
+ACK = 4
+
+# For printing the above:
+STATUS = {
+    SEND_READY: 'SEND_READY',
+    STILL_WORKING: 'STILL_WORKING',
+    ALL_DONE: 'ALL_DONE',
+    ACK: 'ACK',
+}
+
+
 @unique
 class SyncStatus(IntEnum):
     """Possible statuses for a repository's sync state."""
+
     ERROR = -1
     NOT_AHEAD = 0
     AHEAD = 1
@@ -180,217 +213,6 @@ EXAMPLE_FILE_STATUSES = {'01 clean repo': (SyncStatus.NOT_AHEAD, RepoStatus.IS_A
 ICON_TESTING_DIR = 'git_nautilus_icons/icon_testing_dir'
 
 
-# class InotifyWatcher(object):
-#     """A class to watch repos with inotify"""
-
-#     WATCH_flags = (flags.MODIFY | flags.MOVED_FROM | flags.MOVED_TO |
-#                    flags.CREATE | flags.DELETE | flags.DELETE_SELF | flags.MOVE_SELF |
-#                    flags.ONLYDIR | flags.DONT_FOLLOW | flags.EXCL_UNLINK)
-
-#     def __init__(self):
-#         # Repos that we are monitoring:
-#         self.repos = set()
-
-#         # Mapping of directories we are watching to the set of (possibly
-#         # multiple) repos that they are in:
-#         self.dir_to_repos = {}
-
-#         # Mapping of watched directories to a set of thier child directories:
-#         self.child_dirs = {}
-
-#         # Mapping of watched directories to their parent directories:
-#         self.parent_dirs = {}
-
-#         # Mapping of watch descriptors to directories:
-#         self.watch_descriptor_to_dir = {}
-
-#         # Mapping of directories to watch descriptors:
-#         self.dir_to_watch_descriptor = {}
-
-#         from inotify_simple import INotify
-#         self.inotify = INotify()
-
-#     def fileno(self):
-#         return self.inotify.fd
-
-#     def watch_tree(self, path, repo_paths):
-#         """Watch all directories in the tree rooted at path and in the given
-#         repositories (a set, possibly with more than one repository if the
-#         path is in a submodule)"""
-#         # Because we initiate watching from the top down, we won't miss any
-#         # folders - Those created after we traverse a directory will have
-#         # events generated about their creation. We may however see events
-#         # about some directories we are already watching. This is no problem,
-#         # as adding an identical watch twice has no effect.
-#         for dirpath, dirnames, _ in os.walk(path):
-#             try:
-#                 watch_descriptor = self.inotify.add_watch(dirpath, self.WATCH_flags)
-#             except OSError as e:
-#                 import errno
-#                 if e.errno in (errno.ENOTDIR, errno.ENOENT):
-#                     # directory has since been deleted or replaced by a file,
-#                     # so we no longer care about it.
-#                     pass
-#                 else:
-#                     raise
-#             else:
-#                 child_names = [os.path.join(dirpath, d) for d in dirnames]
-#                 self.child_dirs[dirpath] = set(child_names)
-#                 self.parent_dirs[dirpath] = os.path.dirname(dirpath)
-
-#                 self.dir_to_watch_descriptor[dirpath] = watch_descriptor
-#                 self.watch_descriptor_to_dir[watch_descriptor] = dirpath
-#                 repos_for_this_dir = self.dir_to_repos.setdefault(dirpath, set())
-#                 repos_for_this_dir.update(repo_paths)
-
-#     def rm_watch_tree(self, path):
-#         to_remove = [path]
-#         while to_remove:
-#             path = to_remove.pop()
-#             # Remove everything:
-#             wd = self.dir_to_watch_descriptor.pop(path)
-#             self.inotify.rm_watch(wd)
-#             if path in self.repos:
-#                 self.repos.remove(path)
-#             del self.parent_dirs[path]
-#             del self.dir_to_repos[path]
-#             del self.watch_descriptor_to_dir[wd]
-#             child_dirs = self.child_dirs.pop(path)
-#             # And remove all children too:
-#             for child_dir in child_dirs:
-#                 to_remove.extend(self.dir_to_watch_descriptor[child_dir])
-
-#     def add_repo(self, path):
-#         """Start watching a repo"""
-#         print('[SUB] add_repo:', os.path.basename(path))
-#         self.watch_tree(path, repo_paths=set((path,)))
-#         self.repos.add(path)
-
-#     def process_events(self):
-#         events = self.inotify.read()
-#         update_status_dirs = set()
-#         for event in events:
-#             if event.mask & flags.IGNORED:
-#                 continue
-#             path = self.watch_descriptor_to_dir[event.wd]
-#             if path.endswith('/.git') and event.name == 'index.lock':
-#                 continue
-#             print('[SUB]', event)
-#             for flag in flags.from_mask(event.mask):
-#                 print('[SUB]   ', flag)
-#             if event.mask & flags.ISDIR:
-#                 subdir_path = os.path.join(path, event.name)
-#                 update_status_dirs.add(path)
-#                 if event.mask & (flags.DELETE | flags.MOVED_FROM):
-#                     # Directory gone, stop watching it:
-#                     self.rm_watch_tree(subdir_path)
-#                 if event.mask & (flags.CREATE | flags.MOVED_TO):
-#                     # New directory, start watching it. Need parent dir to
-#                     # know which repo(s) the new dir is in, should be the
-#                     # same as its parent dir:
-#                     repo_paths = self.dir_to_repos[path]
-#                     self.watch_tree(subdir_path, repo_paths)
-#             elif event.mask & (flags.MOVE_SELF | flags.DELETE_SELF):
-#                 # Directory gone, stop watching it:
-#                 self.rm_watch_tree(path)
-#             elif event.mask & (flags.CREATE | flags.DELETE | flags.MODIFY |
-#                                flags.MOVED_FROM | flags.MOVED_TO):
-#                 # Contents of directory changed, so repo status needs updating:
-#                 update_status_dirs.add(path)
-#             else:
-#                 raise ValueError(flags.from_mask(event.mask))
-
-#         # And we have repos to update, if they haven't been removed by
-#         # rm_watch_tree:
-#         repos_to_update = set()
-#         for path in update_status_dirs:
-#             try:
-#                 repos = self.dir_to_repos[path]
-#             except KeyError:
-#                 pass # Deleted by another event.
-#             else:
-#                 repos_to_update.update(repos)
-
-#         return repos_to_update
-
-
-# class InotifyInformer(object):
-#     """A class to let us know if files have changed in a repo since we last
-#     asked. We only call 'git status' if they have.'"""
-#     ARRAY_SIZE = 1000
-#     def __init__(self):
-#         from multiprocessing import Pipe, RawArray, Process
-#         # We're making a shared array of bytes, and will spawn a subprocess.
-#         # The subprocess will write ones to the array for filepaths of repos
-#         # that require updating. We will read these and know if repos need
-#         # updating, and will write zeros before we do each update so we won't
-#         # update again until the subprocess says so by writing another one. We
-#         # store which filepath corresponds to which array index (and vice
-#         # versa) in dictionaries, and will only store ARRAY_SIZE of them
-#         # before going back to the start and overwriting old ones.
-
-#         self.array = RawArray('b', self.ARRAY_SIZE)
-#         self.current_index = 0
-
-#         # Bidirectional table so lookups both ways can be fast:
-#         self.index_to_filepath = {}
-#         self.filepath_to_index = {}
-
-#         self.connection, child_connection = Pipe()
-
-#         self.subproc = Process(target=self.checker, args=(child_connection,))
-#         self.subproc.daemon=True
-#         self.subproc.start()
-
-#     def requires_update(self, filepath):
-#         try:
-#             index = self.filepath_to_index[filepath]
-#         except KeyError:
-#             # We haven't seen this file before. Tell the subprocess about it,
-#             # and store it in our dictionaries:
-#             self.connection.send(('add', filepath))
-#             self._new_file(filepath)
-#             self.connection.recv()
-#             index = self.current_index
-#         if not self.array[index]:
-#             return False
-#         self.array[index] = 0
-#         return True
-
-#     def _new_file(self, filepath):
-#         """Called in both processes to update their copies of the data
-#         structures when we get a new filepath"""
-#         # Store the new filepath in our dictionaries at the current index,
-#         # overwriting an old entry if there is one there already:
-#         self.current_index = (self.current_index + 1) % self.ARRAY_SIZE
-#         existing_filepath = self.index_to_filepath.get(self.current_index, None)
-#         if existing_filepath is not None:
-#             del self.filepath_to_index[existing_filepath]
-#         self.index_to_filepath[self.current_index] = filepath
-#         self.filepath_to_index[filepath] = self.current_index
-
-#     def checker(self, connection):
-#         import select
-#         watcher = InotifyWatcher()
-#         while True:
-#             (events,[],[]) = select.select([connection, watcher],[],[])
-#             if connection in events:
-#                 cmd, filepath = connection.recv()
-#                 if cmd == 'add':
-#                     self._new_file(filepath)
-#                     watcher.add_repo(filepath)
-#                     self.array[self.current_index] = 1
-#                 elif cmd == 'remove':
-#                     raise NotImplementedError
-#                 connection.send(None)
-#             if watcher in events:
-#                 repos_to_update = watcher.process_events()
-#                 for repo in repos_to_update:
-#                     print('[SUB] update detected:', os.path.basename(repo))
-#                     index = self.filepath_to_index[repo]
-#                     self.array[index] = 1
-
-
 def example_statuses(path):
     return {os.path.join(path, name): value for name, value in EXAMPLE_FILE_STATUSES.items()}
 
@@ -470,7 +292,8 @@ class FileStatuses(dict):
             # Try parent_directories:
             paths_tried = []
             i = 0
-            while i < 1000: # Really make sure we don't infinitely loop here if I've made a mistake
+            # Really make sure we don't infinitely loop here if I've made a mistake
+            while i < 1000:
                 i += 1
                 if path in ('/', self.repo_root):
                     return STATUS_CODES['ERROR']
@@ -487,9 +310,8 @@ class FileStatuses(dict):
                     for path in paths_tried:
                         self[path] = result
                     return result
-            else:
-                sys.stderr.write("Looping too long in FileStatuses.__getitem__\n")
-                return STATUS_CODES['ERROR']
+            sys.stderr.write("Looping too long in FileStatuses.__getitem__\n")
+            return STATUS_CODES['ERROR']
 
 
 def git_call(cmd, path):
@@ -580,11 +402,29 @@ def get_repo_overall_status(path, statuses):
         worktree_status = WorktreeStatus.CLEAN
         merge_status = MergeStatus.NO_CONFLICT
     else:
-        index_status, worktree_status, merge_status = get_folder_overall_status(path, set(statuses.values()), statuses)
+        index_status, worktree_status, merge_status = get_folder_overall_status(
+            path, set(statuses.values()), statuses
+        )
     return sync_status, repo_status, index_status, worktree_status, merge_status
 
 
+def function_with_cache(orig_func):
+    """Cache results of a function clear cache with func.cache.clear. Does not support
+    kwargs."""
+    def f(*args):
+        try:
+            return f.cache[args]
+        except KeyError:
+            f.cache[(args)] = orig_func(*args)
+            return f.cache[args]
+    f.cache = {}
+    return f
+
+
+@function_with_cache
 def repo_status(path):
+    if DEBUG:
+        print("repo status:", path)
     """Return the status of the repo overall as well as a dict of the statuses
     of all non-ignored files in it. All files within the work tree but not
     listed in the output have the status of their parent directories.
@@ -650,9 +490,10 @@ def get_statuses_by_dir(path, file_statuses):
     return statuses_by_dir
 
 
-# import bprofile
-# @bprofile.BProfile('test.png')
+@function_with_cache
 def directory_status(path):
+    if DEBUG:
+        print("directory_status:", path)
     """Returns the statuses for all the files/directories in a given path
     (without recursing). For folders in a repo, their status is given as the
     most severe of their contents. For repositories, their status is given as
@@ -686,7 +527,7 @@ def directory_status(path):
         except NotARepo:
             # Repo deleted
             return {}
-        # As as optimisation, collect the set of statuses in each directory at
+        # As an optimisation, collect the set of statuses in each directory at
         # the current level we're at:
         statuses_by_dir = get_statuses_by_dir(path, file_statuses)
         for basename in os.listdir(path):
@@ -711,36 +552,11 @@ def directory_status(path):
                     continue
             else:
                 # A normal folder. Give its overall
-                status = get_folder_overall_status(fullname, statuses_by_dir[fullname], file_statuses)
+                status = get_folder_overall_status(
+                    fullname, statuses_by_dir[fullname], file_statuses
+                )
             statuses[fullname] = status
     return statuses
-
-
-class Cache(object):
-    file_statuses = {}
-
-    @classmethod
-    def update(cls, directory):
-        cls.file_statuses = directory_status(directory)
-        # Invalidate Nautilus's file info for all files in this directory,
-        # triggering it to ask as for them again:
-        for path in os.listdir(directory):
-            fullpath = os.path.join(directory, path)
-            if sys.version_info.major == 2:
-                fullpath = fullpath.encode('utf8')
-            uri = pathlib.Path(fullpath).as_uri()
-            fileinfo = Nautilus.FileInfo.create_for_uri(uri)
-            fileinfo.invalidate_extension_info()
-
-
-    @classmethod
-    def get(cls, path):
-        if path not in cls.file_statuses:
-            cls.update(os.path.dirname(path))
-        # We pop to force an update if Nautilus asks for the same file twice -
-        # it usually only does so if a file has changed or a refresh has been
-        # done or such, so it's appropraite to refresh our cache:
-        return cls.file_statuses.pop(path)
 
 
 def get_filepath(file):
@@ -762,20 +578,182 @@ def get_filepath(file):
         path = _checkdecode(unquote(parsed_uri.path))
         return os.path.abspath(os.path.join(netloc, path))
 
-class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
-    def update_file_info(self, file):
-        filepath = get_filepath(file)
-        if filepath is None:
-            return
-        status = Cache.get(filepath)
-        if DEBUG:
-            print(os.path.basename(filepath))
-            if status is not None:
-                for s in status:
-                    print('   ', s)
-        if status is not None:
-            icon = get_icon(status)
-            if icon is not None:
+
+class WorkerProcess(object):
+    TIMEOUT = 0.01
+    """A separate process for making git status calls without blocking Nautilis's GUI.
+    This could have been a thread instead of a process, but nautilus-python has an issue
+    where it does not realease the GIL when it has finished running extension code, so
+    the interpreter cannot keep running background threads. So no problem, we use a
+    separate process instead."""
+    def __init__(self, conn):
+        self.conn = conn
+        # Files whose status we still need to check
+        self.pending = set()
+        # Files whose status we're waiting to send to the parent process
+        self.ready = set()
+        self.lock = threading.Lock()
+        self.processing_required = threading.Event()
+        self.git_status_loop_thread = threading.Thread(target=self.git_status_loop)
+        self.git_status_loop_thread.daemon = True
+        self.git_status_loop_thread.start()
+
+    def git_status_loop(self):
+        """Runs in a thread to get git statuses for files in self.pending, and add them
+        to self.ready. Does work until self.pending is empty, and then blocks until
+        self.processing_required is set."""
+        while True:
+            self.processing_required.wait()
+            if DEBUG:
+                print("worker: git status loop: triggered")
+            self.processing_required.clear()
+            while self.pending:
+                # We process in a chunk so that we can cache git status calls and
+                # directory status calls within a chunk, but that new files arriving in
+                # the meantime will not use the cache, as it might be invalid by then.
+                repo_status.cache.clear()
+                directory_status.cache.clear()
+                pending = self.pending.copy()
+                while pending:
+                    path = pending.pop()
+                    status = directory_status(os.path.dirname(path))[path]
+                    if status is not None:
+                        icon = get_icon(status)
+                        if icon is not None:
+                            with self.lock:
+                                if DEBUG:
+                                    print('adding to ready set:', path)
+                                self.ready.add((path, icon))
+                    self.pending.remove(path)
+
+    def run(self):
+        timeout = None
+        while True:
+            # Block until we get a message. If we get a message with a filepath, set
+            # timeout = self.TIMEOUT so that we can detect when files stop coming. This
+            # way we can batch our processing. Once messages cease, set timeout = None
+            # to block again.
+            if self.conn.poll(timeout):
+                try:
+                    message = self.conn.recv()
+                except EOFError:
+                    return
+                if message == SEND_READY:
+                    # Send the parent the details of the filepaths we've processed so
+                    # far:
+                    with self.lock:
+                        if DEBUG:
+                            print('worker sending %d processed files' % len(self.ready))
+                        if self.pending:
+                            status = STILL_WORKING
+                        else:
+                            status = ALL_DONE
+                        self.conn.send((self.ready, status))
+                        self.ready = set()
+                else:
+                    # It's a filepath to be processed, add it to the pile:
+                    with self.lock:
+                        self.pending.add(message)
+                    self.conn.send(ACK)
+                    timeout = self.TIMEOUT
+            else:
+                # Timed out. Trigger processing to start and block until the next
+                # message
+                self.processing_required.set()
+                timeout = None
+
+
+def start_worker_process():
+    """Called in the parent process to set up the worker. This is not done with the
+    Python multiprocessing module because a subprocess made via forking will not work in
+    the context of the extension with Nautilus running, and we want to retain Python 2
+    compatibility for now so can't use the 'spawn' option for a fresh process. So we
+    start a process and set up a connection with it somewhat manually"""
+    sock_addr = os.path.join(
+        tempfile.gettempdir(), 'git-nautilus-icons-%s' % hexlify(os.urandom(8)).decode()
+    )
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.bind(sock_addr)
+    sock.listen(1)
+    child = Popen([sys.executable, __file__, WORKER_ARG, sock_addr])
+    client, _ = sock.accept()
+    os.unlink(sock_addr)
+    sock.close()
+    conn = Connection(os.dup(client.fileno()) if PY2 else client.detach())
+    assert conn.recv() == 'hello'
+    conn.send('hello')
+    return conn, child
+
+def setup_connection_with_parent():
+    """Called in the child process to connect to the parent process"""
+    sock_addr = sys.argv[1]
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    sock.connect(sock_addr)
+    conn = Connection(os.dup(sock.fileno()) if PY2 else sock.detach())
+    conn.send('hello')
+    assert conn.recv() == 'hello'
+    return conn
+
+
+if WORKER_ARG not in sys.argv:
+    # Only define the extension info provider in the parent class
+    class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
+        INTERVAL = 50
+        def __init__(self, *args, **kwargs):
+            super(InfoProvider, self).__init__(*args, **kwargs)
+            self.timeout_id = None
+            self.conn, self.child = start_worker_process()
+
+
+        def invalidate_directory(self, directory):
+            """Invalidate Nautilus's file info for all files in the given directory,
+            triggering it to ask us for them again"""
+            for path in os.listdir(directory):
+                fullpath = os.path.join(directory, path)
+                if sys.version_info.major == 2:
+                    fullpath = fullpath.encode('utf8')
+                uri = pathlib.Path(fullpath).as_uri()
+                fileinfo = Nautilus.FileInfo.create_for_uri(uri)
+                fileinfo.invalidate_extension_info()
+
+        def update_file_info(self, file):
+            filepath = get_filepath(file)
+            if filepath is not None:
+                # Put it in the pipe for the subprocess to deal with, and ensure the
+                # timeout is running to check when the subprocess is done:
+                self.conn.send(filepath)
+                assert self.conn.recv() == ACK
+                if self.timeout_id is None:
+                    self.timeout_id = GObject.timeout_add(self.INTERVAL, self.timeout)
+
+        def timeout(self):
+            if DEBUG:
+                print("parent: timeout")
+            self.conn.send(SEND_READY)
+            # print("parent: SEND_READY sent, waiting for response")
+            files, worker_status = self.conn.recv()
+            if DEBUG:
+                print("parent: got response:", STATUS[worker_status])
+            for filepath, icon in files:
                 if DEBUG:
-                    print('    icon:', icon)
-                file.add_emblem(icon)
+                    print("adding icon for file:", filepath)
+                self.set_icon(filepath, icon)
+            if worker_status == ALL_DONE:
+                GObject.source_remove(self.timeout_id)
+                self.timeout_id = None
+                return False
+            elif worker_status == STILL_WORKING:
+                return True
+            else:
+                raise ValueError(worker_status)
+
+        def set_icon(self, filepath, icon):
+            uri = pathlib.Path(filepath).as_uri()
+            file = Nautilus.FileInfo.create_for_uri(uri)
+            file.add_emblem(icon)
+else:
+    # We are in the worker process. Start the worker.
+    sys.argv.remove(WORKER_ARG)
+    conn = setup_connection_with_parent()
+    worker = WorkerProcess(conn)
+    worker.run()
