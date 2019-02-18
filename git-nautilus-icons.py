@@ -616,7 +616,7 @@ class WorkerProcess(object):
                 pending = self.pending.copy()
                 while pending:
                     path = pending.pop()
-                    status = directory_status(os.path.dirname(path))[path]
+                    status = directory_status(os.path.dirname(path)).get(path, None)
                     if status is not None:
                         icon = get_icon(status)
                         if icon is not None:
