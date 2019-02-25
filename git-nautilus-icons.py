@@ -324,13 +324,12 @@ def git_call(cmd, path):
     except OSError:
         # Git not installed, or repo path doesn't exist or isn't a directory.
         raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
-    else:
-        if proc.returncode:
-            if 'not a git repository' in stderr.decode('utf8').lower():
-                raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
-            else:
-                raise CalledProcessError(proc.returncode, cmd, output=(stdout + stderr))
-        return stdout.decode('utf8')
+    if proc.returncode:
+        # Something went wrong - repo got deleted while we were reading it, or something
+        # like that.
+        raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
+    return stdout.decode('utf8')
+
 
 def is_git_repo(path):
     """returns whether a path is a git repo"""
