@@ -10,6 +10,7 @@
 #####################################################################
 
 import os
+import shutil
 import svgutils.transform as sg
 
 unstaged = ['clean', 'modified', 'deleted', 'untracked']
@@ -31,7 +32,7 @@ unstaged_icons = [(None, None, None, unstaged_name) for unstaged_name in unstage
 staged_icons = []
 for _, _, _, unstaged_name in unstaged_icons:
     staged_icons.extend([None, None, staged_name, unstaged_name] for staged_name in staged)
-# We have an 'clean, untracked' icon for when folders/repos are clean and have unmodified files.
+# We have an 'clean, untracked' icon for when folders/repos are clean and have untracked files.
 # Otherwise it looks silly to see just the unmodified icon for a folder or repo.
 staged_icons.append([None, None, clean, untracked])
 
@@ -51,18 +52,15 @@ ahead_icons = [(ahead, repo, bl, br) for _, repo, bl, br in repo_icons]
 # Put them all together:
 all_icons = unstaged_icons + staged_icons + unmerged_icons + repo_icons + ahead_icons
 
+try:
+    shutil.rmtree('hicolor')
+except FileNotFoundError:
+    pass
+    
 os.system('mkdir -p ./hicolor/scalable/emblems/')
 for tl, tr, bl, br in all_icons:
-    #create new SVG figure
+    # create new SVG figure
     background_image = sg.SVGFigure(32, 32)
-    if tl is not None:
-        tl_file = 'sub_icons/{}.svg'.format(tl)
-        tl_image = sg.fromfile(tl_file).getroot()
-        background_image.append(tl_image)
-    if tr is not None:
-        tr_file = 'sub_icons/{}.svg'.format(tr)
-        tr_image = sg.fromfile(tr_file).getroot()
-        background_image.append(tr_image)
     if bl is not None:
         bl_file = 'sub_icons/{}-l.svg'.format(bl)
         bl_image = sg.fromfile(bl_file).getroot()
@@ -71,6 +69,71 @@ for tl, tr, bl, br in all_icons:
         br_file = 'sub_icons/{}-r.svg'.format(br)
         br_image = sg.fromfile(br_file).getroot()
         background_image.append(br_image)
+    if tr is not None:
+        tr_file = 'sub_icons/{}.svg'.format(tr)
+        tr_image = sg.fromfile(tr_file).getroot()
+        background_image.append(tr_image)
+    if tl is not None:
+        tl_file = 'sub_icons/{}.svg'.format(tl)
+        tl_image = sg.fromfile(tl_file).getroot()
+        background_image.append(tl_image)
     filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
     filename = 'hicolor/scalable/emblems/git-{}.svg'.format(filename)
     background_image.save(filename)
+
+# Simplified icons for the 16x16 size. Only shows a single icon for the worktree part of
+# the status.
+os.system('mkdir -p hicolor/16x16/emblems/')
+for tl, tr, bl, br in all_icons:
+    # create new SVG figure
+    background_image = sg.SVGFigure(32, 32)
+    if 'unmerged' in br:
+        br_file = 'sub_icons/unmerged-simple.svg'
+    else:
+        br_file = 'sub_icons/{}-r.svg'.format(br)
+    br_image = sg.fromfile(br_file).getroot()
+    br_image.moveto(-16, -16, scale=1.5)
+    background_image.append(br_image)
+
+    filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
+    filename = 'hicolor/16x16/emblems/git-{}.svg'.format(filename)
+    background_image.save(filename)
+
+
+# Simplified icons for the 8x8@2 size. Only shows a single icon for the worktree part of
+# the status.
+os.system('mkdir -p hicolor/8x8@2/emblems/')
+for tl, tr, bl, br in all_icons:
+    # create new SVG figure
+    background_image = sg.SVGFigure(32, 32)
+    if 'unmerged' in br:
+        br_file = 'sub_icons/unmerged-simple.svg'
+    else:
+        br_file = 'sub_icons/{}-r.svg'.format(br)
+    br_image = sg.fromfile(br_file).getroot()
+    br_image.moveto(-32, -32, scale=2)
+    background_image.append(br_image)
+
+    filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
+    filename = 'hicolor/8x8@2/emblems/git-{}.svg'.format(filename)
+    background_image.save(filename)
+
+
+# Simplified, hand-drawn icons for the 8x8 size. Only shows a single icon for the
+# worktree part of the status.
+os.system('mkdir -p ./hicolor/8x8/emblems/')
+for tl, tr, bl, br in all_icons:
+    if 'unmerged' in br:
+        file = 'tiny_icons/unmerged.png'
+    else:
+        file = 'tiny_icons/{}.png'.format(br)
+
+    filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
+    filename = 'hicolor/8x8/emblems/git-{}.png'.format(filename)
+    shutil.copy(file, filename)
+
+
+# Copy to make @2 versions of 16x16 icons:
+os.system('mkdir -p hicolor/16x16@2/emblems/') 
+for name in os.listdir('hicolor/16x16/emblems'):
+    os.system(f'cp hicolor/16x16/emblems/{name} hicolor/16x16@2/emblems/{name}')

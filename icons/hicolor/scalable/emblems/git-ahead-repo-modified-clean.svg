@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='ASCII' standalone='yes'?>
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" viewBox="0 0 32 32" height="32">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="32" viewBox="0 0 32 32" height="32">
   <g><metadata xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" id="metadata8">
     <rdf:RDF>
       <cc:Work rdf:about="">
@@ -9,12 +9,43 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <defs id="defs6"/>
-  <sodipodi:namedview xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1879" inkscape:window-height="1025" id="namedview4" showgrid="true" units="pt" inkscape:zoom="20.85965" inkscape:cx="17.615313" inkscape:cy="25.566134" inkscape:window-x="41" inkscape:window-y="27" inkscape:window-maximized="1" inkscape:current-layer="svg2">
+  <defs id="defs6">
+    <clipPath id="clipPath852" clipPathUnits="userSpaceOnUse">
+      <circle clip-path="none" r="7.3333335" cy="24" cx="24" id="circle854" style="opacity:1;fill:none;fill-opacity:1;stroke:#326206;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+    </clipPath>
+  </defs>
+  <sodipodi:namedview xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1920" inkscape:window-height="999" id="namedview4" showgrid="true" inkscape:snap-bbox="true" inkscape:snap-smooth-nodes="false" inkscape:bbox-nodes="true" inkscape:zoom="41.7193" inkscape:cx="10.62056" inkscape:cy="6.3961237" inkscape:window-x="0" inkscape:window-y="27" inkscape:window-maximized="1" inkscape:current-layer="svg2">
     <inkscape:grid type="xygrid" id="grid817" units="pt" spacingx="0.66666667" spacingy="0.66666667"/>
   </sodipodi:namedview>
-  <path xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" style="fill:#ad7fa8;fill-opacity:1;stroke:#c8a9c4;stroke-width:1.33333337;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 2,8.6666666 H 6 V 14.000001 L 10,14 V 8.6666666 h 4 V 7.3333332 l -6,-6 -6,6.0000002 z" id="path819-3" inkscape:connector-curvature="0" sodipodi:nodetypes="cccccccccc"/>
-  <path xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" style="fill:none;stroke:#5c3566;stroke-width:1.33333337;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 0.66666704,8.6666666 H 4.666667 V 14 H 10 V 8.6666666 h 4 V 7.3333332 L 7.333334,0.6666665 0.66666704,7.3333332 Z" id="path819" inkscape:connector-curvature="0"/>
+  <g id="g841" transform="translate(-16.004191,0.00418811)">
+    <circle style="opacity:1;fill:#ffc53f;fill-opacity:1;stroke:#ffdb86;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path819-3" cx="24" cy="25.333334" r="7.3333335" clip-path="url(#clipPath852)" transform="rotate(-45,24.000002,23.999999)"/>
+    <circle style="opacity:1;fill:none;fill-opacity:1;stroke:#d89700;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path819" cx="-2.1500847e-07" cy="33.941128" r="7.3333335" transform="rotate(-45)"/>
+  </g>
+  <path xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" style="fill:none;stroke:#000000;stroke-width:2.66666675;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 8,20.631713 c 0,4.70162 0,4.70162 0,4.70162" id="path843" inkscape:connector-curvature="0"/>
+  <circle style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.33333337;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="path845" cx="8" cy="28.666666" r="1.3333334"/>
+</g>
+  <g><metadata xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" id="metadata8">
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dc:title/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs id="defs6">
+    <clipPath clipPathUnits="userSpaceOnUse" id="clipPath852">
+      <circle style="opacity:1;fill:none;fill-opacity:1;stroke:#326206;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="circle854" cx="24" cy="24" r="7.3333335" clip-path="none"/>
+    </clipPath>
+  </defs>
+  <sodipodi:namedview xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1879" inkscape:window-height="1025" id="namedview4" showgrid="true" inkscape:snap-bbox="true" inkscape:snap-smooth-nodes="false" inkscape:snap-global="true" inkscape:zoom="14.75" inkscape:cx="12.759802" inkscape:cy="10.430915" inkscape:window-x="41" inkscape:window-y="27" inkscape:window-maximized="1" inkscape:current-layer="svg2" inkscape:bbox-nodes="true">
+    <inkscape:grid type="xygrid" id="grid817" units="pt" spacingx="0.66666667" spacingy="0.66666667"/>
+  </sodipodi:namedview>
+  <g xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" id="g880" transform="translate(0.00419112,0.00419096)">
+    <circle transform="rotate(-45,24,24)" clip-path="url(#clipPath852)" r="7.3333335" cy="25.333334" cx="24" id="path819-3" style="opacity:1;fill:#4b8e0a;fill-opacity:1;stroke:#91b76d;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+    <path sodipodi:nodetypes="ccc" inkscape:connector-curvature="0" id="path873" d="m 21.333334,25.333333 2.666666,2 4,-6" style="fill:none;stroke:#ffffff;stroke-width:2.66666675;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+    <circle transform="rotate(-45)" r="7.3333335" cy="33.941124" cx="3.5527137e-15" id="path819" style="opacity:1;fill:none;fill-opacity:1;stroke:#326206;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+  </g>
 </g>
   <g><metadata xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" id="metadata8">
     <rdf:RDF>
@@ -45,44 +76,11 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <defs id="defs6">
-    <clipPath id="clipPath852" clipPathUnits="userSpaceOnUse">
-      <circle clip-path="none" r="7.3333335" cy="24" cx="24" id="circle854" style="opacity:1;fill:none;fill-opacity:1;stroke:#326206;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-    </clipPath>
-  </defs>
-  <sodipodi:namedview xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1879" inkscape:window-height="1025" id="namedview4" showgrid="true" inkscape:snap-bbox="true" inkscape:snap-smooth-nodes="false" inkscape:bbox-nodes="true" inkscape:zoom="14.75" inkscape:cx="16.373762" inkscape:cy="8.080453" inkscape:window-x="41" inkscape:window-y="27" inkscape:window-maximized="1" inkscape:current-layer="svg2">
+  <defs id="defs6"/>
+  <sodipodi:namedview xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1879" inkscape:window-height="1025" id="namedview4" showgrid="true" units="pt" inkscape:zoom="20.85965" inkscape:cx="17.615313" inkscape:cy="25.566134" inkscape:window-x="41" inkscape:window-y="27" inkscape:window-maximized="1" inkscape:current-layer="svg2">
     <inkscape:grid type="xygrid" id="grid817" units="pt" spacingx="0.66666667" spacingy="0.66666667"/>
   </sodipodi:namedview>
-  <g xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" id="g852" transform="translate(-16.00838)">
-    <g transform="translate(0.00418857,0.00418811)" id="g841">
-      <circle transform="rotate(-45,24.000002,23.999999)" clip-path="url(#clipPath852)" r="7.3333335" cy="25.333334" cx="24" id="path819-3" style="opacity:1;fill:#ffc53f;fill-opacity:1;stroke:#ffdb86;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-      <circle transform="rotate(-45)" r="7.3333335" cy="33.941128" cx="-2.1500847e-07" id="path819" style="opacity:1;fill:none;fill-opacity:1;stroke:#d89700;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-    </g>
-    <path inkscape:connector-curvature="0" id="path843" d="m 23.999999,19.991178 c 0,4.70162 0,4.70162 0,4.70162" style="fill:none;stroke:#000000;stroke-width:2.66666675;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-    <circle r="1.3333334" cy="28" cx="24" id="path845" style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.33333337;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-  </g>
-</g>
-  <g><metadata xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" id="metadata8">
-    <rdf:RDF>
-      <cc:Work rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-        <dc:title/>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs id="defs6">
-    <clipPath clipPathUnits="userSpaceOnUse" id="clipPath852">
-      <circle style="opacity:1;fill:none;fill-opacity:1;stroke:#326206;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" id="circle854" cx="24" cy="24" r="7.3333335" clip-path="none"/>
-    </clipPath>
-  </defs>
-  <sodipodi:namedview xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1879" inkscape:window-height="1025" id="namedview4" showgrid="true" inkscape:snap-bbox="true" inkscape:snap-smooth-nodes="false" inkscape:snap-global="true" inkscape:zoom="14.75" inkscape:cx="12.759802" inkscape:cy="10.430915" inkscape:window-x="41" inkscape:window-y="27" inkscape:window-maximized="1" inkscape:current-layer="svg2" inkscape:bbox-nodes="true">
-    <inkscape:grid type="xygrid" id="grid817" units="pt" spacingx="0.66666667" spacingy="0.66666667"/>
-  </sodipodi:namedview>
-  <g xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" id="g880" transform="translate(0.00419112,0.00419096)">
-    <circle transform="rotate(-45,24,24)" clip-path="url(#clipPath852)" r="7.3333335" cy="25.333334" cx="24" id="path819-3" style="opacity:1;fill:#4b8e0a;fill-opacity:1;stroke:#91b76d;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-    <path sodipodi:nodetypes="ccc" inkscape:connector-curvature="0" id="path873" d="m 21.333334,25.333333 2.666666,2 4,-6" style="fill:none;stroke:#ffffff;stroke-width:2.66666675;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-    <circle transform="rotate(-45)" r="7.3333335" cy="33.941124" cx="3.5527137e-15" id="path819" style="opacity:1;fill:none;fill-opacity:1;stroke:#326206;stroke-width:1.33333337;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
-  </g>
+  <path xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" style="fill:#ad7fa8;fill-opacity:1;stroke:#c8a9c4;stroke-width:1.33333337;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 2,8.6666666 H 6 V 14.000001 L 10,14 V 8.6666666 h 4 V 7.3333332 l -6,-6 -6,6.0000002 z" id="path819-3" inkscape:connector-curvature="0" sodipodi:nodetypes="cccccccccc"/>
+  <path xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" style="fill:none;stroke:#5c3566;stroke-width:1.33333337;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 0.66666704,8.6666666 H 4.666667 V 14 H 10 V 8.6666666 h 4 V 7.3333332 L 7.333334,0.6666665 0.66666704,7.3333332 Z" id="path819" inkscape:connector-curvature="0"/>
 </g>
 </svg>
