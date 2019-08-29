@@ -53,6 +53,16 @@ they are ahead of remote.
 
 ![alt tag](key.png)
 
+## Simplified icons at small sizes
+
+At small file icon sizes (16x16 and 32x32), there is not enough room to show detailed
+information for each file and simplified icons are shown instead, displaying only the
+working tree status of each file, folder, or repository. These icon sizes are only
+available in the list/tree view of Nautilus. Here is what that looks like for the
+smallest icon size in Nautilus:
+
+![alt tag](small_icons.png)
+
 ## Blacklisting
 
 You can blacklist repositories, to tell `git-nautilus-icons` not to check
