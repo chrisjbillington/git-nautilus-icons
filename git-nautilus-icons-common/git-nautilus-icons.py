@@ -14,7 +14,7 @@ import sys
 import os
 import pathlib
 from enum import IntEnum, unique
-from subprocess import Popen, PIPE, CalledProcessError
+from subprocess import Popen, PIPE, CalledProcessError, check_call
 from collections import defaultdict
 import socket
 import threading
@@ -45,18 +45,41 @@ if WORKER_ARG not in sys.argv:
         from gi.repository import Nautilus
 
 
-# Below is a blacklist for repos that should be ignored. Useful for ignoring
-# massive repos that make nautilus run slow. Ensure you don't have a trailing
-# slash on the directory paths entered here:
+BLACKLIST_TEMPLATE = """# git-{nautilus,nemo,caja}-icons blacklist file.
+#
+# The extension will ignore files in any directories listed in this file, and any of
+# their subdirectories.
+#
+# Blank lines and lines beginning with '#' will be ignored. A '#' character within a
+# line will be treated as part of the directory path, so end-of-line comments are not
+# allowed.
 
-blacklist = ['/home/chrisjbillington/clones/example_repo.git',
-             '/home/chrisjbillington/clones/some_other_example_huge_repo.git',
-             ]
+# Example:
+/home/chrisjbillington/clones/example_repo.git
 
+# Another example:
+/home/chrisjbillington/clones/some_other_example_huge_repo.git
+"""
 
-# Change to print debug information when running Nautilus from the terminal:
+# Make blacklist file if it doesn't exist:
+_conf = os.getenv('XDG_CONFIG_HOME', os.path.join(os.getenv('HOME'), '.config'))
+BLACKLIST_FILE = os.path.join(_conf, 'git-nautilus-icons', 'blacklist.conf')
+if not os.path.exists(BLACKLIST_FILE):
+    check_call(['mkdir', '-p', os.path.dirname(BLACKLIST_FILE)])
+    with open(BLACKLIST_FILE, 'w') as f:
+        f.write(BLACKLIST_TEMPLATE)
+
+blacklist = []
+
+with open(BLACKLIST_FILE) as f:
+    for line in f.readlines():
+        line = line.strip()
+        if line and not line.startswith('#'):
+            if not line.endswith('/'):
+                line += '/'
+            blacklist.append(line)
+
 DEBUG = False
-
 
 def blacklisted(path):
     path += '/'

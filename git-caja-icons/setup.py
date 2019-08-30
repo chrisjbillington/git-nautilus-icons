@@ -16,5 +16,5 @@ setup(
     data_files=[
         ('/usr/share/caja-python/extensions', ['git-caja-icons.py']),
     ],
-    install_requires=['git-caja-icons-common'],
+    install_requires=['git-nautilus-icons-common'],
 )
