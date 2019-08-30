@@ -1,1 +1,0 @@
-/usr/share/git-nautilus-icons-common/git-nautilus-icons.py

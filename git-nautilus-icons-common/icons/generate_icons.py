@@ -57,7 +57,8 @@ try:
 except FileNotFoundError:
     pass
     
-os.system('mkdir -p ./hicolor/scalable/emblems/')
+# Icons to be used at size 24x24 and larger
+os.system('mkdir -p ./hicolor/24x24/emblems/')
 for tl, tr, bl, br in all_icons:
     # create new SVG figure
     background_image = sg.SVGFigure(32, 32)
@@ -78,7 +79,7 @@ for tl, tr, bl, br in all_icons:
         tl_image = sg.fromfile(tl_file).getroot()
         background_image.append(tl_image)
     filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
-    filename = 'hicolor/scalable/emblems/git-{}.svg'.format(filename)
+    filename = 'hicolor/24x24/emblems/git-{}.svg'.format(filename)
     background_image.save(filename)
 
 # Simplified icons for the 16x16 size. Only shows a single icon for the worktree part of
@@ -131,9 +132,3 @@ for tl, tr, bl, br in all_icons:
     filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
     filename = 'hicolor/8x8/emblems/git-{}.png'.format(filename)
     shutil.copy(file, filename)
-
-
-# Copy to make @2 versions of 16x16 icons:
-os.system('mkdir -p hicolor/16x16@2/emblems/') 
-for name in os.listdir('hicolor/16x16/emblems'):
-    os.system(f'cp hicolor/16x16/emblems/{name} hicolor/16x16@2/emblems/{name}')

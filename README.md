@@ -148,4 +148,5 @@ changing the blacklist, it will take effect when Nautilus/Nemo/Caja is next run.
 
 Icons are updated every time you browse to a directory, but whilst in a directory,
 Nautilus/Nemo/Caja doesn't ask the extension for new icons unless it sees a file change
-on disk, and even then it seems to not always notice. Press F5 to force a refresh.
+on disk. Because of this, statuses may be incorrect after a `git add` or `git commit`.
+Press F5 to force a refresh.

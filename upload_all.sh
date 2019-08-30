@@ -11,5 +11,6 @@ do
     rm -rf dist
     python setup.py sdist
     twine upload --skip-existing dist/*
+    rm -rf dist *.egg-info version LICENSE README.md
     cd ..
 done
