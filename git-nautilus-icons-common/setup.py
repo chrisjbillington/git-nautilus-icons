@@ -8,9 +8,14 @@ for path in glob.iglob('icons/hicolor/*/*/*'):
     subdir, filename = os.path.split(path)
     icons_by_install_dir[f'/usr/share/{subdir}'].add(path)
 
+try:
+    VERSION = open('version').read().strip()
+except FileNotFoundError:
+    VERSION = open('../version').read().strip()
+
 setup(
     name='git-nautilus-icons-common',
-    version=open('../version').read().strip(),
+    version=VERSION,
     description="Common files for git-nautilus-icons, git-nemo-icons and git-caja-icons",
     author='Chris Billington',
     author_email='chrisjbillington@gmail.com',
