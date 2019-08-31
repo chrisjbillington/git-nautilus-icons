@@ -2,7 +2,7 @@
 
 set -e
 
-for PACKAGE in git-nautilus-icons-common git-nautilus-icons git-nemo-icons git-caja-icons
+for PACKAGE in git_nautilus_icons_common git_nautilus_icons git_nemo_icons git_caja_icons
 do
     cp version $PACKAGE/
     cp README.md $PACKAGE/
