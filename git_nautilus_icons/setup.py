@@ -13,6 +13,6 @@ setup(
     author_email='chrisjbillington@gmail.com',
     url='https://github.com/chrisjbillington/git_nautilus_icons/',
     license="BSD",
-    install_requires=['git_nautilus_icons_common'],
+    install_requires=['git_nautilus_icons_common>=%s' % VERSION],
     data_files=[('/usr/share/nautilus-python/extensions/', ['git_nautilus_icons.py'])],
 )
