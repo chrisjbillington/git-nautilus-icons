@@ -45,7 +45,10 @@ sudo pip install git-{nautilus,nemo,caja}-icons
 # sudo pip uninstall git-{nautilus,nemo,caja}-icons git-nautilus-icons-common
 ```
 
-Note: the required dependencies will change in the future as these distros move to
+---
+**NOTE**
+
+ the required dependencies will change in the future as these distros move to
 building Nautilus/Nemo/Caja python plugin support with Python 3 instead of Python 2. If
 you are from the future and I have forgotten to update these instructions after this has
 occurred, the following should work:
@@ -56,6 +59,8 @@ sudo pip3 install git-{nautilus,nemo,caja}-icons
 # To uninstall, run:
 # sudo pip3 uninstall git-{nautilus,nemo,caja}-icons git-nautilus-icons-common
 ```
+---
+
 
 ### Arch-based
 
@@ -118,7 +123,22 @@ with whether or not they are ahead of remote.
 
 ## Simplified icons at small sizes
 
-At small file icon sizes (16x16 and 32x32), there is not enough room to show detailed
+---
+**NOTE**
+
+This feature does not currently work at the smallest sizes due to there being no way
+(that I know of) for an application to add 8x8 and 12x12 icons to the icon theme in a
+theme-independent way. I have made a merge reqest to the [hicolor icon
+theme](https://gitlab.freedesktop.org/xdg/default-icon-theme/merge_requests/1) that
+would resolve the issue. In the meantime, if you want the simplified icons to work at
+the smallest sizes, you may use the patched `index.theme` file from that merge request:
+```bash
+wget https://gitlab.freedesktop.org/chrisjbillington/default-icon-theme/raw/master/index.theme
+sudo mv index.theme /usr/share/icons/hicolor/index.theme
+```
+---
+
+At small file icon sizes (16x16, 24x24, and 32x32), there is not enough room to show detailed
 information for each file and simplified icons are shown instead, displaying only the
 working tree status of each file, folder, or repository. These icon sizes are only
 available in the list/tree view of Nautilus. Here is what that looks like for the
