@@ -68,20 +68,20 @@ sudo pip3 install git_{nautilus,nemo,caja}_icons
 
 In Arch-based distros, use the AUR packages:
 
-[`git-nautilus-icons`](https://aur.archlinux.org/pkgbase/git-nautilus-icons/)<sup>AUR</sup> or [`git-nautilus-icons-git`](https://aur.archlinux.org/pkgbase/git-nautilus-icons-git/)<sup>AUR</sup>
+[`git-nautilus-icons`](https://aur.archlinux.org/packages/git-nautilus-icons/)<sup>AUR</sup> or [`git-nautilus-icons-git`](https://aur.archlinux.org/packages/git-nautilus-icons-git/)<sup>AUR</sup>
 
-[`git-nautilus-icons-py2`](https://aur.archlinux.org/pkgbase/git-nautilus-icons-py2/)<sup>AUR</sup> or [`git-nautilus-icons-py2-git`](https://aur.archlinux.org/pkgbase/git-nautilus-icons-py2-git/)<sup>AUR</sup>
+[`git-nautilus-icons-py2`](https://aur.archlinux.org/packages/git-nautilus-icons-py2/)<sup>AUR</sup> or [`git-nautilus-icons-py2-git`](https://aur.archlinux.org/packages/git-nautilus-icons-py2-git/)<sup>AUR</sup>
 
-[`git-nemo-icons`](https://aur.archlinux.org/pkgbase/git-nemo-icons/)<sup>AUR</sup> or [`git-nemo-icons-git`](https://aur.archlinux.org/pkgbase/git-nemo-icons-git/)<sup>AUR</sup>
+[`git-nemo-icons`](https://aur.archlinux.org/packages/git-nemo-icons/)<sup>AUR</sup> or [`git-nemo-icons-git`](https://aur.archlinux.org/packages/git-nemo-icons-git/)<sup>AUR</sup>
 
-[`git-caja-icons-py2`](https://aur.archlinux.org/pkgbase/git-caja-icons-py2/)<sup>AUR</sup> or [`git-caja-icons-git`](https://aur.archlinux.org/pkgbase/git-caja-icons-git/)<sup>AUR</sup>
+[`git-caja-icons-py2`](https://aur.archlinux.org/packages/git-caja-icons-py2/)<sup>AUR</sup> or [`git-caja-icons-git`](https://aur.archlinux.org/packages/git-caja-icons-git/)<sup>AUR</sup>
 
 
 Note that nautilus on Arch currently supports Python 2 or Python 3 extensions, but not
 both at the same time. If you are running other nautilus extensions that require Python
 2, you will need to install the `-py2` AUR package. Otherwise, or if in doubt, install
 the Python 3 version:
-[`git-nautilus-icons`](https://aur.archlinux.org/pkgbase/git-nautilus-icons/)<sup>AUR</sup>.
+[`git-nautilus-icons`](https://aur.archlinux.org/packages/git-nautilus-icons/)<sup>AUR</sup>.
 
 At present, caja on Arch only supports Python 2 extensions, and nemo only supports
 Python 3 extensions. caja will [likely change to
