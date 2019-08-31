@@ -69,8 +69,11 @@ sudo pip3 install git_{nautilus,nemo,caja}_icons
 In Arch-based distros, use the AUR packages:
 
 [`git-nautilus-icons`](https://aur.archlinux.org/pkgbase/git-nautilus-icons/)<sup>AUR</sup> or [`git-nautilus-icons-git`](https://aur.archlinux.org/pkgbase/git-nautilus-icons-git/)<sup>AUR</sup>
+
 [`git-nautilus-icons-py2`](https://aur.archlinux.org/pkgbase/git-nautilus-icons-py2/)<sup>AUR</sup> or [`git-nautilus-icons-py2-git`](https://aur.archlinux.org/pkgbase/git-nautilus-icons-py2-git/)<sup>AUR</sup>
+
 [`git-nemo-icons`](https://aur.archlinux.org/pkgbase/git-nemo-icons/)<sup>AUR</sup> or [`git-nemo-icons-git`](https://aur.archlinux.org/pkgbase/git-nemo-icons-git/)<sup>AUR</sup>
+
 [`git-caja-icons-py2`](https://aur.archlinux.org/pkgbase/git-caja-icons-py2/)<sup>AUR</sup> or [`git-caja-icons-git`](https://aur.archlinux.org/pkgbase/git-caja-icons-git/)<sup>AUR</sup>
 
 
