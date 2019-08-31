@@ -1,9 +1,6 @@
 from setuptools import setup
 
-try:
-    VERSION = open('version').read().strip()
-except FileNotFoundError:
-    VERSION = open('../version').read().strip()
+VERSION = open('version').read().strip()
 
 setup(
     name='git_nemo_icons',

@@ -2,7 +2,4 @@ icons_old/
 async_monitor/
 *.egg-info
 */dist
-*/version
-*/README.md
-*/LICENSE
 todo.txt

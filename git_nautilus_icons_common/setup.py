@@ -8,10 +8,7 @@ for path in glob.iglob('icons/hicolor/*/*/*'):
     subdir, filename = os.path.split(path)
     icons_by_install_dir['/usr/share/%s' % subdir].add(path)
 
-try:
-    VERSION = open('version').read().strip()
-except FileNotFoundError:
-    VERSION = open('../version').read().strip()
+VERSION = open('version').read().strip()
 
 setup(
     name='git_nautilus_icons_common',
