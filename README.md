@@ -42,7 +42,7 @@ specific file browser you want to install the plugin for.
 sudo apt-get install python-gi python-{nautilus,nemo,caja} python-pathlib python-enum34 python-pip
 sudo pip install git_{nautilus,nemo,caja}_icons
 # To uninstall, run:
-# sudo pip uninstall git_{nautilus,nemo,caja}+icons git_nautilus_icons_common
+# sudo pip uninstall git_{nautilus,nemo,caja}_icons git_nautilus_icons_common
 ```
 
 ---
@@ -57,7 +57,7 @@ occurred, the following should work:
 sudo apt-get install python3-gi python3-{nautilus,nemo,caja} python3-pip
 sudo pip3 install git_{nautilus,nemo,caja}_icons
 # To uninstall, run:
-# sudo pip3 uninstall git_{nautilus,nemo,caja}_icons git_nautilus_icons-common
+# sudo pip3 uninstall git_{nautilus,nemo,caja}_icons git_nautilus_icons_common
 ```
 ---
 
