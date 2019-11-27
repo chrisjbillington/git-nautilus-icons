@@ -346,7 +346,7 @@ def git_call(cmd, path):
         stdout, stderr = proc.communicate()
     except OSError:
         # Git not installed, or repo path doesn't exist or isn't a directory.
-        raise NotARepo(proc.returncode, cmd, output=(stdout + stderr))
+        raise NotARepo(1, cmd, "Couldn't run git command - path might not exist")
     if proc.returncode:
         # Something went wrong - repo got deleted while we were reading it, or something
         # like that.
