@@ -531,7 +531,12 @@ def directory_status(path):
     statuses = {}
     if not is_in_work_tree(path):
         # Not in a git repo. Give statuses of any git repos within:
-        for basename in os.listdir(path):
+        try:
+            subdirs = os.listdir(path)
+        except FileNotFoundError:
+            # Deleted
+            subdirs = []
+        for basename in subdirs:
             fullname = os.path.join(path, basename)
             if os.path.isdir(fullname) and is_git_repo(fullname):
                 try:
@@ -552,7 +557,12 @@ def directory_status(path):
         # As an optimisation, collect the set of statuses in each directory at
         # the current level we're at:
         statuses_by_dir = get_statuses_by_dir(path, file_statuses)
-        for basename in os.listdir(path):
+        try:
+            subdirs = os.listdir(path)
+        except FileNotFoundError:
+            # Deleted
+            subdirs = []
+        for basename in subdirs:
             fullname = os.path.join(path, basename)
             if basename == '.git':
                 status = None
