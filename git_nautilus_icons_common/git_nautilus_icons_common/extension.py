@@ -533,8 +533,8 @@ def directory_status(path):
         # Not in a git repo. Give statuses of any git repos within:
         try:
             subdirs = os.listdir(path)
-        except FileNotFoundError:
-            # Deleted
+        except (OSError,FileNotFoundError):
+            # Deleted, unmounted, or otherwise gone
             subdirs = []
         for basename in subdirs:
             fullname = os.path.join(path, basename)
@@ -559,8 +559,8 @@ def directory_status(path):
         statuses_by_dir = get_statuses_by_dir(path, file_statuses)
         try:
             subdirs = os.listdir(path)
-        except FileNotFoundError:
-            # Deleted
+        except (OSError,FileNotFoundError):
+            # Deleted, unmounted, or otherwise gone
             subdirs = []
         for basename in subdirs:
             fullname = os.path.join(path, basename)
