@@ -461,6 +461,11 @@ def repo_status(path):
     while i < len(status_entries):
         status_entry = status_entries[i]
         status = status_entry[0:2]
+        # Consider a change in file type (link to non-link or vice-versa) a
+        # modification:
+        status = status.replace('T', 'M')
+        # Consider a copy into a new file to be an addition:
+        status = status.replace('C', 'A')
         relpath = status_entry[3:]
         filename = os.path.join(repo_root, relpath)
         if filename in statuses:
