@@ -147,6 +147,7 @@ class WorktreeStatus(IntEnum):
     DELETED = 5
     MODIFIED = 6
     UNMERGED = 7
+    IS_DOT_GIT = 8
 
 
 @unique
@@ -197,7 +198,9 @@ STATUS_CODES = {
                 # git doesn't tell it about, or because a file appears twice
                 # but not in the manner handled above, then we use this
                 # status:
-                'ERROR': (IndexStatus.ERROR, WorktreeStatus.ERROR, MergeStatus.ERROR)}
+                'ERROR': (IndexStatus.ERROR, WorktreeStatus.ERROR, MergeStatus.ERROR),
+
+                'IS_DOT_GIT': (IndexStatus.CLEAN, WorktreeStatus.IS_DOT_GIT, MergeStatus.NO_CONFLICT)}
 
 
 # The status of the files in the 'icon_testing_dir' directory, hard coded to
@@ -244,6 +247,8 @@ def get_icon(status):
     if len(status) == 3:
         # It's a file
         index_status, worktree_status, merge_status = status
+        if worktree_status == WorktreeStatus.IS_DOT_GIT:
+            return 'git-dotgit'
         sync_status = SyncStatus.NOT_AHEAD
         repo_status = RepoStatus.NOT_A_REPO
     elif len(status) == 5:
@@ -570,7 +575,7 @@ def directory_status(path):
         for basename in subdirs:
             fullname = os.path.join(path, basename)
             if basename == '.git':
-                status = None
+                status = STATUS_CODES['IS_DOT_GIT']
             elif not os.path.isdir(fullname):
                 # A normal file:
                 status = file_statuses.get_status(fullname)
