@@ -50,7 +50,7 @@ repo_icons = [(None, repo, bl, br) for _, _, bl, br in unstaged_icons + staged_i
 # For each git icon, make an icon for the case where it is ahead:
 ahead_icons = [(ahead, repo, bl, br) for _, repo, bl, br in repo_icons]
 
-dotgit_icon = [(dotgit, None, None, None)] 
+dotgit_icon = [(None, None, None, dotgit)] 
 # Put them all together:
 all_icons = unstaged_icons + staged_icons + unmerged_icons + repo_icons + ahead_icons + dotgit_icon
 
@@ -89,15 +89,12 @@ os.system('mkdir -p hicolor/16x16/emblems/')
 for tl, tr, bl, br in all_icons:
     # create new SVG figure
     background_image = sg.SVGFigure(32, 32)
-    if tl == 'dotgit':
-        br_file = 'sub_icons/dotgit.svg'
-    elif 'unmerged' in br:
+    if 'unmerged' in br:
         br_file = 'sub_icons/unmerged-simple.svg'
     else:
         br_file = 'sub_icons/{}-r.svg'.format(br)
     br_image = sg.fromfile(br_file).getroot()
-    if tl != dotgit:
-        br_image.moveto(-16, -16, scale=1.5)
+    br_image.moveto(-16, -16, scale=1.5)
     background_image.append(br_image)
 
     filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
@@ -111,15 +108,12 @@ os.system('mkdir -p hicolor/8x8@2/emblems/')
 for tl, tr, bl, br in all_icons:
     # create new SVG figure
     background_image = sg.SVGFigure(32, 32)
-    if tl == 'dotgit':
-        br_file = 'sub_icons/dotgit.svg'
-    elif 'unmerged' in br:
+    if 'unmerged' in br:
         br_file = 'sub_icons/unmerged-simple.svg'
     else:
         br_file = 'sub_icons/{}-r.svg'.format(br)
     br_image = sg.fromfile(br_file).getroot()
-    if tl != dotgit:
-        br_image.moveto(-32, -32, scale=2)
+    br_image.moveto(-32, -32, scale=2)
     background_image.append(br_image)
 
     filename = '-'.join([name for name in (tl, tr, bl, br) if name is not None])
@@ -131,9 +125,7 @@ for tl, tr, bl, br in all_icons:
 # worktree part of the status.
 os.system('mkdir -p hicolor/8x8/emblems/')
 for tl, tr, bl, br in all_icons:
-    if tl == 'dotgit':
-        file = 'tiny_icons/dotgit.png'
-    elif 'unmerged' in br:
+    if 'unmerged' in br:
         file = 'tiny_icons/unmerged.png'
     else:
         file = 'tiny_icons/{}.png'.format(br)
