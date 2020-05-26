@@ -63,7 +63,12 @@ BLACKLIST_TEMPLATE = """# git-{nautilus,nemo,caja}-icons blacklist file.
 
 # Make blacklist file if it doesn't exist:
 _conf = os.getenv('XDG_CONFIG_HOME', os.path.join(os.getenv('HOME'), '.config'))
-BLACKLIST_FILE = os.path.join(_conf, 'git_nautilus_icons', 'blacklist.conf')
+BLACKLIST_FILE = os.path.join(_conf, 'git-nautilus-icons', 'blacklist.conf')
+if not os.path.exists(BLACKLIST_FILE):
+    # Backcompat for before the rename:
+    OLD_BLACKLIST_FILE = os.path.join(_conf, 'git_nautilus_icons', 'blacklist.conf')
+    if os.path.exists(OLD_BLACKLIST_FILE):
+        BLACKLIST_FILE = OLD_BLACKLIST_FILE
 if not os.path.exists(BLACKLIST_FILE):
     check_call(['mkdir', '-p', os.path.dirname(BLACKLIST_FILE)])
     with open(BLACKLIST_FILE, 'w') as f:

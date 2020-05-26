@@ -1,9 +1,9 @@
-# git_nautilus_icons
+# git-nautilus-icons
 
 Use Git? Use nautilus, nemo or caja? Why not have your file browser give you info
 about your repos?
 
-`git_nautilus_icons` overlays emblems saying whether files are modified, added,
+`git-nautilus-icons` overlays emblems saying whether files are modified, added,
 untracked etc, with a high level of detail showing the exact git status of each file
 including both staged and unstaged changes separately. It marks git repos as such and
 displays icons on them showing whether they have changed files, unpushed commits, etc.
@@ -36,28 +36,28 @@ loaded next time nautilus/nemo/caja is run.
 
 In Debian-based distros, install the required dependencies using `apt`, then install the
 plugin with `pip`. In the below commands, replace `{nautilus,nemo,caja}` with the
-specific file browser you want to install the plugin for.
+file browser(s) you want the plugin to work with.
+
+### Older distros (Ubuntu < 20.04, Debian 10 ("buster") or earler)
+
+These older distros use Python 2-based extensions for nautilus, nemo and caja:
 
 ```bash
 sudo apt-get install python-gi python-{nautilus,nemo,caja} python-pathlib python-enum34 python-pip
-sudo pip install git_{nautilus,nemo,caja}_icons
+pip install --user git-nautilus-icons
 # To uninstall, run:
-# sudo pip uninstall git_{nautilus,nemo,caja}_icons git_nautilus_icons_common
+# pip uninstall git-nautilus-icons
 ```
 
----
-**NOTE**
+### Newer distros (Ubuntu >= 20.04, Debian sid, to become Debian 11 ("bullseye") or later)
 
- the required dependencies will change in the future as these distros move to
-building nautilus/nemo/caja python plugin support with Python 3 instead of Python 2. If
-you are from the future and I have forgotten to update these instructions after this has
-occurred, the following should work:
+These newer distros use Python 3 based extensions for nautilus, nemo, and caja:
 
 ```bash
 sudo apt-get install python3-gi python3-{nautilus,nemo,caja} python3-pip
-sudo pip3 install git_{nautilus,nemo,caja}_icons
+pip3 install --user git-nautilus-icons
 # To uninstall, run:
-# sudo pip3 uninstall git_{nautilus,nemo,caja}_icons git_nautilus_icons_common
+# pip3 uninstall git-nautilus-icons
 ```
 ---
 
@@ -68,26 +68,11 @@ sudo pip3 install git_{nautilus,nemo,caja}_icons
 
 In Arch-based distros, use the AUR packages:
 
-[`git-nautilus-icons`](https://aur.archlinux.org/packages/git-nautilus-icons/)<sup>AUR</sup> or [`git-nautilus-icons-git`](https://aur.archlinux.org/packages/git-nautilus-icons-git/)<sup>AUR</sup>
+[`git-nautilus-icons`](https://aur.archlinux.org/packages/git-nautilus-icons/)<sup>AUR</sup>
+ or [`git-nautilus-icons-git`](https://aur.archlinux.org/packages/git-nautilus-icons-git/)<sup>AUR</sup>
 
-[`git-nautilus-icons-py2`](https://aur.archlinux.org/packages/git-nautilus-icons-py2/)<sup>AUR</sup> or [`git-nautilus-icons-py2-git`](https://aur.archlinux.org/packages/git-nautilus-icons-py2-git/)<sup>AUR</sup>
-
-[`git-nemo-icons`](https://aur.archlinux.org/packages/git-nemo-icons/)<sup>AUR</sup> or [`git-nemo-icons-git`](https://aur.archlinux.org/packages/git-nemo-icons-git/)<sup>AUR</sup>
-
-[`git-caja-icons-py2`](https://aur.archlinux.org/packages/git-caja-icons-py2/)<sup>AUR</sup> or [`git-caja-icons-git`](https://aur.archlinux.org/packages/git-caja-icons-git/)<sup>AUR</sup>
-
-
-Note that nautilus on Arch currently supports Python 2 or Python 3 extensions, but not
-both at the same time. If you are running other nautilus extensions that require Python
-2, you will need to install the `-py2` AUR package. Otherwise, or if in doubt, install
-the Python 3 version:
-[`git-nautilus-icons`](https://aur.archlinux.org/packages/git-nautilus-icons/)<sup>AUR</sup>.
-
-At present, caja on Arch only supports Python 2 extensions, and nemo only supports
-Python 3 extensions. caja will [likely change to
-support](https://bugs.archlinux.org/task/62919) Python 3 extensions in the future, at
-which point I will make a `git_caja_icons` AUR package. Please file an issue or comment
-on the AUR package page to remind me to do this if I forget.
+The additional dependencies required for running with nautilus, nemo, or caja are listed
+as optional dependencies of the AUR package.
 
 ### Other distros
 ![other](distro_icons/linux.png)
@@ -100,7 +85,7 @@ Python 3 version of `pip` installed, and then run (replacing `{nautilus,nemo,caj
 the file browser you want to install the extension for):
 
 ```bash
-sudo pip3 install git_{nautilus,nemo,caja}_icons
+pip3 install --user git-nautilus-icons
 ```
 
 Note that on some distros, `python3` is named `python` and `pip3` is named `pip`.
@@ -110,11 +95,6 @@ extensions, then you additionally require the Python 2 `pathlib` and `enum34` pa
 likely called `python-pathlib` and `python-enum34`. Then the instructions are the same
 as above except with the Python 2 versions of the GObject introspection library, file
 browser extension support, and pip.
-
-Make sure you install the extension using the correct version of pip: if you have Python
-2 extension support for nautilus, nemo, or caja, you must use pip from Python 2, and if
-you have Python 3 extension support then you must use pip from Python 3. You will not
-get an error if you install using the wrong pip, but the result will not work.
 
 If you know the required dependencies for your distro, please file an issue or a pull
 request for this project and I will update these instructions to include them.
@@ -157,14 +137,14 @@ smallest icon size in nautilus:
 
 ## Blacklisting
 
-You can blacklist repositories or directories, to tell `git_nautilus_icons` not to check
+You can blacklist repositories or directories, to tell `git-nautilus-icons` not to check
 git statuses there. This could be useful in the case of an extremely large repository
 where calling `git status` is slow and so the extension slows down browsing in nautilus.
 Git calls by this extension are asynchronous and so do not cause the file browser to
 hang, but nautilus/nemo/caja can be slow to render large numbers of emblems.
 
 To blacklist a repository or directory, add a line containing the full path to the
-repository or directory to the file `$HOME/.config/git_nautilus_icons/blacklist.conf`.
+repository or directory to the file `$HOME/.config/git-nautilus-icons/blacklist.conf`.
 Note that the path to this file is the same for all versions of the extension—there are
 not separate blacklists for the nemo and caja versions of the extension.
 `git-nautilus-icons` will ignore any files in blacklisted directories or any of their

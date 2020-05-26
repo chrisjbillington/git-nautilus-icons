@@ -1,5 +1,4 @@
-icons_old/
-async_monitor/
+build
+dist
 *.egg-info
-*/dist
-todo.txt
+__pycache__
