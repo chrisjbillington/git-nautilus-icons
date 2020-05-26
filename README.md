@@ -38,7 +38,7 @@ In Debian-based distros, install the required dependencies using `apt`, then ins
 plugin with `pip`. In the below commands, replace `{nautilus,nemo,caja}` with the
 file browser(s) you want the plugin to work with.
 
-### Older distros (Ubuntu < 20.04, Debian 10 ("buster") or earler)
+### Older distros (Ubuntu < 20.04, Debian 10 ("buster") or earlier)
 
 These older distros use Python 2-based extensions for nautilus, nemo and caja:
 
