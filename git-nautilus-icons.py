@@ -740,10 +740,10 @@ def setup_connection_with_parent():
 
 if WORKER_ARG not in sys.argv:
     # Only define the extension info provider in the parent class
-    class InfoProvider(GObject.GObject, Nautilus.InfoProvider):
+    class GitNautilusIcons(GObject.GObject, Nautilus.InfoProvider):
         INTERVAL = 50
         def __init__(self, *args, **kwargs):
-            super(InfoProvider, self).__init__(*args, **kwargs)
+            super(GitNautilusIcons, self).__init__(*args, **kwargs)
             self.timeout_id = None
             self.conn, self.child = start_worker_process()
 
