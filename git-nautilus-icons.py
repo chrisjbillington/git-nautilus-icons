@@ -388,13 +388,9 @@ def get_repo_root(path):
     or raises NotARepo if the directory is not in a git repo"""
     if blacklisted(path):
         raise NotARepo
-    cmd = ['git', 'rev-parse', '--git-dir']
+    cmd = ['git', 'rev-parse', '--show-cdup']
     output = git_call(cmd, path).strip()
-    if output == '.git':
-        return path
-    else:
-        # Otherwise it's given as an absolute path:
-        return os.path.dirname(output)
+    return os.path.normpath(os.path.join(path, output))
 
 
 def repo_is_ahead(path):
