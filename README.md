@@ -27,7 +27,7 @@ the more detailed information would not be visible at such a small size.
 
 ## Installation
 
-Installation instructions or various distros follow. After installation, restart
+Installation instructions for various distros follow. After installation, restart
 nautilus/nemo/caja with `killall {nautilus,nemo,caja}`, and then the plugin will be
 loaded next time nautilus/nemo/caja is run.
 
