@@ -16,6 +16,7 @@ extensions = {
 
 setup(
     name='git-nautilus-icons',
+    packages=[],
     use_scm_version=True,
     description="Detailed git status icons for nautilus, nemo, and caja",
     author='Chris Billington',
