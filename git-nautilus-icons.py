@@ -41,7 +41,10 @@ if WORKER_ARG not in sys.argv:
         gi.require_version('Caja', '2.0')
         from gi.repository import Caja as Nautilus
     else:
-        gi.require_version('Nautilus', '3.0')
+        try:
+            gi.require_version('Nautilus', '3.0')
+        except ValueError:
+            gi.require_version('Nautilus', '4.0')
         from gi.repository import Nautilus
 
 
