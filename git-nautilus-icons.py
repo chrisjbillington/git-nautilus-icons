@@ -42,9 +42,11 @@ if WORKER_ARG not in sys.argv:
         from gi.repository import Caja as Nautilus
     else:
         try:
-            gi.require_version('Nautilus', '3.0')
+            gi.require_version('Nautilus', '4.1')
         except ValueError:
             gi.require_version('Nautilus', '4.0')
+        except ValueError:
+            gi.require_version('Nautilus', '3.0')
         from gi.repository import Nautilus
 
 
@@ -244,7 +246,7 @@ EXAMPLE_FILE_STATUSES = {'01 clean repo': (SyncStatus.NOT_AHEAD, RepoStatus.IS_A
                               IndexStatus.DELETED, WorktreeStatus.DELETED, MergeStatus.NO_CONFLICT),
                          }
 
-ICON_TESTING_DIR = 'git_nautilus_icons/icon_testing_dir'
+ICON_TESTING_DIR = 'git-nautilus-icons/icon_testing_dir'
 
 
 def example_statuses(path):
